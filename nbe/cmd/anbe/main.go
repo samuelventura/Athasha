@@ -1,30 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 
-	"github.com/samuelventura/athasha/nbe/pkg/aenbe"
+	"github.com/samuelventura/athasha/nbe/pkg/anbe"
 )
 
 func main() {
+	ctrlc := make(chan os.Signal, 1)
+	signal.Notify(ctrlc, os.Interrupt)
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 	var db = relative("db3")
-	var dao = aenbe.NewDao(db)
-	var state = aenbe.NewState(dao)
-	var hub = aenbe.NewHub(state)
-	var core = aenbe.NewCore(hub)
+	var dao = anbe.NewDao(db)
+	var state = anbe.NewState(dao)
+	var hub = anbe.NewHub(state)
+	var core = anbe.NewCore(hub)
 	defer core.Close()
-	var entry = aenbe.NewEntry(core, 5001)
+	var entry = anbe.NewEntry(core, 5001)
 	defer entry.Close()
 	log.Println("Port", entry.Port())
 	log.Println("Pid", os.Getpid())
 	log.Println("Exe", executable())
 	log.Println("Db", db)
-	log.Println("Press Enter to quit")
-	fmt.Scanln()
+	log.Println("Press Ctrl+C to quit")
+	<-ctrlc
 }
 
 func executable() string {

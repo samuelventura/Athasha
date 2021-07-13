@@ -22,9 +22,9 @@ cd nbe
 go mod init github.com/samuelventura/athasha/nbe
 go get -u all
 go mod tidy
-go install github.com/samuelventura/athasha/nbe/cmd/aenbe
-aenbe
-go install github.com/samuelventura/athasha/nbe/cmd/aenbe && aenbe
+go install github.com/samuelventura/athasha/nbe/cmd/anbe
+anbe
+go install github.com/samuelventura/athasha/nbe/cmd/anbe && anbe
 
 go clean -testcache
-go test github.com/samuelventura/athasha/nbe/pkg/aenbe -v
+go test github.com/samuelventura/athasha/nbe/pkg/anbe -v

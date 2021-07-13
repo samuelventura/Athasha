@@ -2,3 +2,7 @@
 table, th, td {
   border: 1px solid black;;
 }
+
+.FileSearch, .FileNew {
+  display: inline;
+}

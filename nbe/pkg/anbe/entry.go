@@ -1,4 +1,4 @@
-package aenbe
+package anbe
 
 import (
 	"fmt"
@@ -81,7 +81,6 @@ func (client *clientDso) loop() {
 	})
 	go client.reader(id)
 	for mutation := range output {
-		trace("encodeMutation", mutation)
 		bytes := encodeMutation(mutation)
 		err := client.conn.WriteMessage(websocket.TextMessage, bytes)
 		panicIfError(err)

@@ -1,4 +1,4 @@
-package aenbe
+package anbe
 
 import (
 	"fmt"

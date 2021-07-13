@@ -1,4 +1,4 @@
-package aenbe
+package anbe
 
 type Mutation struct {
 	Name   string

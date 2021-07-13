@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function SearchBar(props) {
+function FileSearch(props) {
 
   const [filter, setFilter] = useState(props.filter);
   
@@ -21,7 +21,7 @@ function SearchBar(props) {
   }
 
   return (
-    <div className="SearchBar">
+    <div className="FileSearch">
       <input 
         data-testid="textbox" 
         type="text" 
@@ -38,4 +38,4 @@ function SearchBar(props) {
   );
 }
 
-export default SearchBar;
+export default FileSearch;

@@ -1,4 +1,4 @@
-package aenbe
+package anbe
 
 import (
 	"encoding/json"
@@ -7,16 +7,16 @@ import (
 
 func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 	mut = &Mutation{}
-	var raw interface{}
-	err = json.Unmarshal(bytes, &raw)
+	var mmi interface{}
+	err = json.Unmarshal(bytes, &mmi)
 	if err != nil {
 		return
 	}
-	dict := raw.(map[string]interface{})
-	mut.Name = dict["name"].(string)
+	mm := mmi.(map[string]interface{})
+	mut.Name = mm["name"].(string)
 	switch mut.Name {
 	case "init":
-		argm := dict["args"].(map[string]interface{})
+		argm := mm["args"].(map[string]interface{})
 		args := &InitArgs{}
 		files := argm["files"].([]interface{})
 		args.Files = make([]*CreateArgs, 0, len(files))
@@ -30,19 +30,19 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		}
 		mut.Args = args
 	case "create":
-		argm := dict["args"].(map[string]interface{})
+		argm := mm["args"].(map[string]interface{})
 		args := &CreateArgs{}
-		args.Id = uint(argm["id"].(float64))
+		args.Id = decodeId(argm["id"])
 		args.Name = argm["name"].(string)
 		args.Mime = argm["mime"].(string)
 		mut.Args = args
 	case "delete":
-		argm := dict["args"].(map[string]interface{})
+		argm := mm["args"].(map[string]interface{})
 		args := &DeleteArgs{}
 		args.Id = uint(argm["id"].(float64))
 		mut.Args = args
 	case "rename":
-		argm := dict["args"].(map[string]interface{})
+		argm := mm["args"].(map[string]interface{})
 		args := &RenameArgs{}
 		args.Id = uint(argm["id"].(float64))
 		args.Name = argm["name"].(string)
@@ -53,25 +53,34 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 	return
 }
 
+func decodeId(id interface{}) uint {
+	switch v := id.(type) {
+	case float64:
+		return uint(v)
+	default:
+		return 0
+	}
+}
+
 func encodeMutation(mutation *Mutation) []byte {
-	mut := make(map[string]interface{})
-	mut["name"] = mutation.Name
-	mut["origin"] = mutation.Origin
+	mm := make(map[string]interface{})
+	mm["name"] = mutation.Name
+	mm["origin"] = mutation.Origin
 	args, err := encodeArgs(mutation.Name, mutation.Args)
 	panicIfError(err)
-	mut["args"] = args
-	bytes, err := json.Marshal(mut)
+	mm["args"] = args
+	bytes, err := json.Marshal(mm)
 	panicIfError(err)
 	return bytes
 }
 
-func encodeArgs(name string, args interface{}) (argm map[string]interface{}, err error) {
+func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err error) {
 	switch name {
 	case "init":
-		dto := args.(*InitArgs)
+		args := argi.(*InitArgs)
 		argm = make(map[string]interface{})
-		files := make([]map[string]interface{}, 0, len(dto.Files))
-		for _, file := range dto.Files {
+		files := make([]map[string]interface{}, 0, len(args.Files))
+		for _, file := range args.Files {
 			fm := make(map[string]interface{})
 			fm["id"] = file.Id
 			fm["name"] = file.Name
@@ -80,20 +89,20 @@ func encodeArgs(name string, args interface{}) (argm map[string]interface{}, err
 		}
 		argm["files"] = files
 	case "create":
-		dto := args.(*CreateArgs)
+		args := argi.(*CreateArgs)
 		argm = make(map[string]interface{})
-		argm["id"] = dto.Id
-		argm["name"] = dto.Name
-		argm["mime"] = dto.Mime
+		argm["id"] = args.Id
+		argm["name"] = args.Name
+		argm["mime"] = args.Mime
 	case "delete":
-		dto := args.(*DeleteArgs)
+		args := argi.(*DeleteArgs)
 		argm = make(map[string]interface{})
-		argm["id"] = dto.Id
+		argm["id"] = args.Id
 	case "rename":
-		dto := args.(*RenameArgs)
+		args := argi.(*RenameArgs)
 		argm = make(map[string]interface{})
-		argm["id"] = dto.Id
-		argm["name"] = dto.Name
+		argm["id"] = args.Id
+		argm["name"] = args.Name
 	default:
 		err = fmt.Errorf("unkown mutation %s", name)
 	}

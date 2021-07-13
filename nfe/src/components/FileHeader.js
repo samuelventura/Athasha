@@ -1,5 +1,3 @@
-
-
 function FileHeader(props) {
   
   function handleAscClick() {

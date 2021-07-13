@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 
-import SearchBar from "./SearchBar";
+import FileSearch from "./FileSearch";
 import FileHeader from "./FileHeader";
 import FileRows from "./FileRows";
+import FileNew from "./FileNew";
 
 function FileBrowser(props) {
   
@@ -20,9 +20,25 @@ function FileBrowser(props) {
     setSort(value);
   }
 
+  function handleNew(mime) {
+    props.post("create", {name: `New ${mime}`, mime});
+  }
+
+  function handleAction(id, action) {
+    switch(action)
+    {
+      case "delete":
+        props.post("delete", {id});
+        break;
+      default:
+        console.log(`Unknown action ${action}`, id)
+    }
+  }
+
   function viewFiles() {
     const f = filter.toLowerCase();
-    const filtered = props.files.filter(file => 
+    const list = Object.values(props.files)
+    const filtered = list.filter(file => 
       file.name.toLowerCase().includes(f));
     switch(sort) {
       case "asc":
@@ -38,14 +54,15 @@ function FileBrowser(props) {
 
   return (
     <div className="FileBrowser">
-      <SearchBar 
+      <FileNew onNew={handleNew}/>
+      <FileSearch 
         filter={filter} 
         onFilterChange={handleFilterChange}
         />
       <table className="fileTable">
         <FileHeader sort={sort}
           onSortChange={handleSortChange}/>
-        <FileRows files={viewFiles()}/>
+        <FileRows files={viewFiles()} onAction={handleAction}/>
       </table>
     </div>
   );
