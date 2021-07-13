@@ -1,0 +1,30 @@
+#macbook air m1
+go1.16.5.darwin-arm64.pkg
+node-v16.4.1.pkg
+vscode
+
+https://create-react-app.dev/
+npm init react-app web
+cd web
+npm test
+npm start
+npm run build
+
+#minimal setup for mvp
+#no vscode plugin needed so far
+#defer styling as much as possible
+https://testing-library.com
+https://keycode.info
+
+add ~/go/bin to PATH
+mkdir nbe
+cd nbe
+go mod init github.com/samuelventura/athasha/nbe
+go get -u all
+go mod tidy
+go install github.com/samuelventura/athasha/nbe/cmd/aenbe
+aenbe
+go install github.com/samuelventura/athasha/nbe/cmd/aenbe && aenbe
+
+go clean -testcache
+go test github.com/samuelventura/athasha/nbe/pkg/aenbe -v
