@@ -4,6 +4,8 @@ import "./App.css";
 
 import FileBrowser from "./components/FileBrowser";
 
+import env from "./environ"
+
 function App() {
   
   function reducer(state, {name, args, origin}) {
@@ -13,7 +15,7 @@ function App() {
     switch(name){
       case "init": {
         const next = Object.assign({}, state);
-        next.session = origin
+        next.session = origin;
         next.files = {};
         args.files.forEach(f => next.files[f.id] = f);
         return next;
@@ -49,7 +51,7 @@ function App() {
         return next;
       }
       default:
-        console.log("Unknown mutation", name, args, origin)
+        env.log("Unknown mutation", name, args, origin)
         return state;
     }
   }
@@ -60,7 +62,7 @@ function App() {
 
   function handleDispatch({name, args}) {
     if (!socket) {
-      console.log("Null socket dispatch", name, args)
+      env.log("Null socket dispatch", name, args)
       return;
     }
     switch(name) {
@@ -70,33 +72,32 @@ function App() {
       case "create":
       case "delete":
       case "rename":
-        console.log("ws.send", {name, args});
+        env.log("ws.send", {name, args});
         socket.send(JSON.stringify({name, args}));
         break;
       default:
-        console.log("Unknown mutation", name, args)
+        env.log("Unknown mutation", name, args)
     }
   }
 
   useEffect(() => {
     function connect() {
-      const url = "ws://localhost:5001/ws/index";
-      const ws = new WebSocket(url);
+      const ws = new WebSocket(env.wsURL);
       ws.onclose = (event) => {  
-        console.log("ws.close", event);
+        env.log("ws.close", event);
         setSocket(null);
         dispatch({name: "close"});
         setTimeout(connect, 4000);
       }
       ws.onmessage = (event) => {
-        console.log("ws.message", event);
+        env.log("ws.message", event);
         dispatch(JSON.parse(event.data));
       }
       ws.onerror = (event) => {
-        console.log("ws.error", event);
+        env.log("ws.error", event);
       }
       ws.onopen = (event) => {
-        console.log("ws.open", event);
+        env.log("ws.open", event);
         setSocket(ws);
       }
     }

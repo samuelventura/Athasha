@@ -6,6 +6,9 @@ function FileRows(props) {
     props.dispatch({name: "delete", args: {id: file.id}});
   }
 
+  function handleEdit(file) {
+  }
+
   function handleRename(file) {
     const name = window.prompt(`Rename file '${file.name}'`, file.name)
     if (name === null) return;
@@ -29,6 +32,7 @@ function FileRows(props) {
       <td>
         <div className="FileName">{file.name} ({file.mime})</div>
         <div className={`FileActions ${selectedClass(file)}`}>
+        <button onClick={() => handleEdit(file)}>Edit</button>
           <button onClick={() => handleDelete(file)}>Delete</button>
           <button onClick={() => handleRename(file)}>Rename</button>
         </div>

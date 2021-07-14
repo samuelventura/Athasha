@@ -1,5 +1,5 @@
 #macbook air m1
-go1.16.5.darwin-arm64.pkg
+go1.16.6.darwin-arm64.pkg
 node-v16.4.1.pkg
 vscode
 
@@ -29,9 +29,16 @@ go install github.com/samuelventura/athasha/nbe/cmd/anbe && anbe
 go clean -testcache
 go test github.com/samuelventura/athasha/nbe/pkg/anbe -v
 
+[DEVSETUP]
+MOD="github.com/samuelventura/athasha/nbe"
+cd nbe; go install $MOD/cmd/anbe && anbe
+cd nfe; npm start
+
 [TODO]
+- Edit action button
 - File selection on click
-- Show file actions only for selected file?
+- File auto selection on create
+- Show file actions only for selected file
 - File editor auto launch on create
-- File editor launch on dlb click
 - File rename action with modal
+- File delete modal confirmation
