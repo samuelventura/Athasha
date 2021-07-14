@@ -9,7 +9,7 @@ function FileNew(props) {
     const mime = e.target.value;
     const name = window.prompt(`Name for New ${mime}`, `New ${mime}`);
     if (name === null) return;
-    props.post("create", {name, mime});
+    props.dispatch({name: "create", args: {name, mime}});
   }
 
   return (

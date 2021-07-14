@@ -7,8 +7,8 @@ import FileBrowser from "./components/FileBrowser";
 function App() {
   
   function reducer(state, {name, args, origin}) {
-    // called twice on purpose to detect 
-    // side effects on strict mode
+    // called twice on purpose by reactjs 
+    // to detect side effects on strict mode
     // reducer must be pure
     switch(name){
       case "init": {
@@ -58,17 +58,23 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initial);
   const [socket, setSocket] = useState(null);
 
-  function post(name, args) {
+  function handleDispatch({name, args}) {
     if (!socket) {
-      console.log(`Post with null socket ${name}`, args)
+      console.log("Null socket dispatch", name, args)
       return;
     }
     switch(name) {
       case "select":
         dispatch({name, args});
         break;
-      default:
+      case "create":
+      case "delete":
+      case "rename":
+        console.log("ws.send", {name, args});
         socket.send(JSON.stringify({name, args}));
+        break;
+      default:
+        console.log("Unknown mutation", name, args)
     }
   }
 
@@ -76,7 +82,8 @@ function App() {
     function connect() {
       const url = "ws://localhost:5001/ws/index";
       const ws = new WebSocket(url);
-      ws.onclose = () => {  
+      ws.onclose = (event) => {  
+        console.log("ws.close", event);
         setSocket(null);
         dispatch({name: "close"});
         setTimeout(connect, 4000);
@@ -100,7 +107,7 @@ function App() {
     <div className="App">
       <FileBrowser 
         state={state} 
-        post={post} />
+        dispatch={handleDispatch} />
     </div>
   );
 }

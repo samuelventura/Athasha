@@ -37,7 +37,7 @@ function FileBrowser(props) {
 
   return (
     <div className="FileBrowser">
-      <FileNew post={props.post}/>
+      <FileNew dispatch={props.dispatch}/>
       <FileSearch 
         filter={filter} 
         onFilterChange={handleFilterChange}
@@ -46,7 +46,7 @@ function FileBrowser(props) {
         <FileHeader sort={sort}
           onSortChange={handleSortChange}/>
         <FileRows files={viewFiles()} 
-          post={props.post}
+          dispatch={props.dispatch}
           selected={props.state.selected}/>
       </table>
     </div>
