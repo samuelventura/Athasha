@@ -18,6 +18,10 @@ function enableLog(enable) {
   logEnabled = enable;
 }
 
-const environ = {isDev, wsURL, enableLog, log};
+function href(path) {
+  return process.env.PUBLIC_URL + path;
+}
+
+const environ = {isDev, wsURL, enableLog, log, href};
 
 export default environ;

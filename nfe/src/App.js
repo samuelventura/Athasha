@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 
 import "./App.css";
 
-import FileBrowser from "./components/FileBrowser";
+import FileBrowser from "./app/FileBrowser";
 
 import env from "./environ"
 
@@ -44,6 +44,7 @@ function App() {
         return next;
       }
       case "close": {
+        //flickers on navigating back (reconnect)
         const next = Object.assign({}, state);
         next.files = {};
         next.selected = {};
@@ -81,13 +82,27 @@ function App() {
   }
 
   useEffect(() => {
+    let toms = 0;
+    let to = null;
+    let ws = null;
+    function disconnect() {
+      env.log("disconnect", to, ws)
+      if (to) clearTimeout(to);
+      if (ws) ws.close();
+    }
     function connect() {
-      const ws = new WebSocket(env.wsURL);
+      env.log("connect", to, ws)
+      //immediate error when navigating back
+      //toms is workaround for trottled reconnection
+      //safari only, chrome and firefox work ok
+      ws = new WebSocket(env.wsURL);
+      env.log("connected", to, ws)
       ws.onclose = (event) => {  
         env.log("ws.close", event);
         setSocket(null);
         dispatch({name: "close"});
-        setTimeout(connect, 4000);
+        to = setTimeout(connect, toms);
+        toms += 1000; toms %= 4000;
       }
       ws.onmessage = (event) => {
         env.log("ws.message", event);
@@ -99,9 +114,11 @@ function App() {
       ws.onopen = (event) => {
         env.log("ws.open", event);
         setSocket(ws);
+        toms = 0;
       }
     }
-    setTimeout(connect, 0);
+    to = setTimeout(connect, 0);
+    return disconnect;
   }, []);
 
   return (

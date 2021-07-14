@@ -1,3 +1,5 @@
+import env from "../environ"
+
 function FileRows(props) {
   
   function handleDelete(file) {
@@ -7,6 +9,7 @@ function FileRows(props) {
   }
 
   function handleEdit(file) {
+    window.location.href = env.href(`/edit/${file.id}`);
   }
 
   function handleRename(file) {
