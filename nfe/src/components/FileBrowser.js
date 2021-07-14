@@ -7,8 +7,6 @@ import FileNew from "./FileNew";
 
 function FileBrowser(props) {
   
-  //full file list downloaded on connected and updated async
-  //local filtering and sorting
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("asc");
 
@@ -22,7 +20,7 @@ function FileBrowser(props) {
 
   function viewFiles() {
     const f = filter.toLowerCase();
-    const list = Object.values(props.files)
+    const list = Object.values(props.state.files)
     const filtered = list.filter(file => 
       file.name.toLowerCase().includes(f));
     switch(sort) {
@@ -49,7 +47,7 @@ function FileBrowser(props) {
           onSortChange={handleSortChange}/>
         <FileRows files={viewFiles()} 
           post={props.post}
-          selected={props.selected}/>
+          selected={props.state.selected}/>
       </table>
     </div>
   );

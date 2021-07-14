@@ -35,4 +35,3 @@ go test github.com/samuelventura/athasha/nbe/pkg/anbe -v
 - File editor auto launch on create
 - File editor launch on dlb click
 - File rename action with modal
-

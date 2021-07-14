@@ -20,7 +20,8 @@ func NewState(dao Dao) State {
 	state.dao = dao
 	state.files = make(map[uint]*FileDro)
 	for _, file := range state.dao.All() {
-		state.files[file.ID] = &file
+		clone := file
+		state.files[file.ID] = &clone
 	}
 	return state
 }

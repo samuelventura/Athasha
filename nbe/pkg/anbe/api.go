@@ -1,8 +1,8 @@
 package anbe
 
 type Mutation struct {
-	Origin string
 	Name   string
+	Origin string
 	Args   interface{}
 }
 

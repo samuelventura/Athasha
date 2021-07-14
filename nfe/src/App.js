@@ -6,42 +6,56 @@ import FileBrowser from "./components/FileBrowser";
 
 function App() {
   
-  const [session, setSession] = useState(null);
-  const [selected, setSelected] = useState({});
-
-  function reducer(files, {name, args}) {
+  function reducer(state, {name, args, origin}) {
+    // called twice on purpose to detect 
+    // side effects on strict mode
+    // reducer must be pure
     switch(name){
       case "init": {
-        const list = {};
-        args.files.forEach(f => list[f.id] = f);
-        setSession(args.origin);
-        return list;
+        const next = Object.assign({}, state);
+        next.session = origin
+        next.files = {};
+        args.files.forEach(f => next.files[f.id] = f);
+        return next;
       }
       case "create": {
-        const list = Object.assign({}, files);
-        list[args.id] = args;
-        if (session === args.origin) {
-          setSelected(args)
+        const next = Object.assign({}, state);
+        next.files[args.id] = args;
+        if (next.session === origin) {
+          next.selected = args;
         }
-        return list;
+        return next;
       }
       case "delete": {
-        const list = Object.assign({}, files);
-        delete list[args.id]
-        return list;
+        const next = Object.assign({}, state);
+        delete next.files[args.id]
+        return next;
       }
       case "rename": {
-        const list = Object.assign({}, files);
-        list[args.id].name = args.name;
-        return list;
+        const next = Object.assign({}, state);
+        next.files[args.id].name = args.name;
+        return next;
+      }
+      case "select": {
+        const next = Object.assign({}, state);
+        next.selected = args;
+        return next;
+      }
+      case "close": {
+        const next = Object.assign({}, state);
+        next.files = {};
+        next.selected = {};
+        next.session = null;
+        return next;
       }
       default:
-        console.log(`Unknown mutation ${name}`, args)
-        return files;
+        console.log("Unknown mutation", name, args, origin)
+        return state;
     }
   }
 
-  const [files, dispatch] = useReducer(reducer, {});
+  const initial = {files:{}, selected:{}, session:null};
+  const [state, dispatch] = useReducer(reducer, initial);
   const [socket, setSocket] = useState(null);
 
   function post(name, args) {
@@ -51,10 +65,10 @@ function App() {
     }
     switch(name) {
       case "select":
-        setSelected(args);
+        dispatch({name, args});
         break;
       default:
-        socket.send(JSON.stringify({ name, args }));
+        socket.send(JSON.stringify({name, args}));
     }
   }
 
@@ -64,15 +78,19 @@ function App() {
       const ws = new WebSocket(url);
       ws.onclose = () => {  
         setSocket(null);
-        setSession(null);
+        dispatch({name: "close"});
         setTimeout(connect, 4000);
       }
       ws.onmessage = (event) => {
-        setSocket(ws);
+        console.log("ws.message", event);
         dispatch(JSON.parse(event.data));
       }
       ws.onerror = (event) => {
         console.log("ws.error", event);
+      }
+      ws.onopen = (event) => {
+        console.log("ws.open", event);
+        setSocket(ws);
       }
     }
     setTimeout(connect, 0);
@@ -81,9 +99,8 @@ function App() {
   return (
     <div className="App">
       <FileBrowser 
-        files={files} 
-        post={post} 
-        selected={selected}/>
+        state={state} 
+        post={post} />
     </div>
   );
 }

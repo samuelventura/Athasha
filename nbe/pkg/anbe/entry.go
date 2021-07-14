@@ -58,10 +58,12 @@ func (entry *entryDso) listen() {
 }
 
 func (entry *entryDso) loop(conn *websocket.Conn) {
+	id := entry.hub.NextId()
+	ipp := conn.RemoteAddr().String()
 	client := &clientDso{}
 	client.hub = entry.hub
 	client.conn = conn
-	client.id = fmt.Sprintf("%v_%v", entry.hub.NextId(), conn.RemoteAddr().String())
+	client.id = fmt.Sprintf("%v_%v", id, ipp)
 	client.loop()
 }
 
