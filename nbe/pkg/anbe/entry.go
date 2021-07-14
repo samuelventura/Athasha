@@ -21,9 +21,9 @@ type entryDso struct {
 }
 
 type clientDso struct {
-	hub    Hub
-	conn   *websocket.Conn
-	origin string
+	id   string
+	hub  Hub
+	conn *websocket.Conn
 }
 
 func NewEntry(hub Hub, port int) Entry {
@@ -61,17 +61,16 @@ func (entry *entryDso) loop(conn *websocket.Conn) {
 	client := &clientDso{}
 	client.hub = entry.hub
 	client.conn = conn
-	client.origin = conn.RemoteAddr().String()
+	client.id = fmt.Sprintf("%v_%v", entry.hub.NextId(), conn.RemoteAddr().String())
 	client.loop()
 }
 
 func (client *clientDso) loop() {
-	id := client.hub.NextId()
 	output := make(chan *Mutation)
 	defer recoverAndLogPanic()
 	defer client.conn.Close()
-	defer client.hub.Unsubscribe(id)
-	client.hub.Subscribe(id, func(mutation *Mutation) {
+	defer client.hub.Unsubscribe(client.id)
+	client.hub.Subscribe(client.id, func(mutation *Mutation) {
 		switch mutation.Name {
 		case "init", "create", "delete", "rename":
 			output <- mutation
@@ -79,7 +78,7 @@ func (client *clientDso) loop() {
 			close(output)
 		}
 	})
-	go client.reader(id)
+	go client.reader()
 	for mutation := range output {
 		bytes := encodeMutation(mutation)
 		err := client.conn.WriteMessage(websocket.TextMessage, bytes)
@@ -87,10 +86,10 @@ func (client *clientDso) loop() {
 	}
 }
 
-func (client *clientDso) reader(id string) {
+func (client *clientDso) reader() {
 	defer recoverAndLogPanic()
 	defer client.conn.Close()
-	defer client.hub.Unsubscribe(id)
+	defer client.hub.Unsubscribe(client.id)
 	for {
 		mt, msg, err := client.conn.ReadMessage()
 		if err != nil {
@@ -107,7 +106,7 @@ func (client *clientDso) reader(id string) {
 			trace("decodeMutation", err)
 			return
 		}
-		mutation.Origin = client.origin
+		mutation.Origin = client.id
 		client.hub.Apply(mutation)
 	}
 }

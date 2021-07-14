@@ -6,3 +6,15 @@ table, th, td {
 .FileSearch, .FileNew {
   display: inline;
 }
+
+.FileActions {
+  display: none;
+}
+
+.FileActions.FileSelected {
+  display: block;
+}
+
+.FileRow.FileSelected {
+  background-color:cyan;
+}

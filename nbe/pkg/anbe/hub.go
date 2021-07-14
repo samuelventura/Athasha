@@ -39,7 +39,11 @@ func (hub *hubDso) NextId() string {
 
 func (hub *hubDso) Subscribe(id string, client func(mutation *Mutation)) {
 	hub.clients[id] = client
-	client(&Mutation{Name: "init", Args: hub.state.All()})
+	mutation := &Mutation{}
+	mutation.Name = "init"
+	mutation.Args = hub.state.All()
+	mutation.Origin = id
+	client(mutation)
 }
 
 func (hub *hubDso) Unsubscribe(id string) {

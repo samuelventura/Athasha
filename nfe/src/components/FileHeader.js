@@ -18,7 +18,6 @@ function FileHeader(props) {
           <button onClick={handleAscClick}>Asc{ascSelected}</button> 
           <button onClick={handleDescClick}>Desc{descSelected}</button>
         </th>
-        <th>Actions</th>
       </tr>
     </thead>
   );

@@ -20,21 +20,6 @@ function FileBrowser(props) {
     setSort(value);
   }
 
-  function handleNew(mime) {
-    props.post("create", {name: `New ${mime}`, mime});
-  }
-
-  function handleAction(id, action) {
-    switch(action)
-    {
-      case "delete":
-        props.post("delete", {id});
-        break;
-      default:
-        console.log(`Unknown action ${action}`, id)
-    }
-  }
-
   function viewFiles() {
     const f = filter.toLowerCase();
     const list = Object.values(props.files)
@@ -54,7 +39,7 @@ function FileBrowser(props) {
 
   return (
     <div className="FileBrowser">
-      <FileNew onNew={handleNew}/>
+      <FileNew post={props.post}/>
       <FileSearch 
         filter={filter} 
         onFilterChange={handleFilterChange}
@@ -62,7 +47,9 @@ function FileBrowser(props) {
       <table className="fileTable">
         <FileHeader sort={sort}
           onSortChange={handleSortChange}/>
-        <FileRows files={viewFiles()} onAction={handleAction}/>
+        <FileRows files={viewFiles()} 
+          post={props.post}
+          selected={props.selected}/>
       </table>
     </div>
   );

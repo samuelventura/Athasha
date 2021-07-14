@@ -28,3 +28,11 @@ go install github.com/samuelventura/athasha/nbe/cmd/anbe && anbe
 
 go clean -testcache
 go test github.com/samuelventura/athasha/nbe/pkg/anbe -v
+
+[TODO]
+- File selection on click
+- Show file actions only for selected file?
+- File editor auto launch on create
+- File editor launch on dlb click
+- File rename action with modal
+
