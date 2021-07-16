@@ -7,7 +7,7 @@ import (
 )
 
 type Hub interface {
-	Subscribe(id string, client func(mutation *Mutation))
+	Subscribe(sid string, fid uint, client func(mutation *Mutation))
 	Unsubscribe(id string)
 	Apply(mutation *Mutation)
 	NextId() string
@@ -15,16 +15,21 @@ type Hub interface {
 }
 
 type hubDso struct {
-	count   uint64
-	state   State
-	mutex   sync.Mutex
-	clients map[string]func(mutation *Mutation)
+	count    uint64
+	state    State
+	mutex    sync.Mutex
+	sessions map[string]*sessionDso
+}
+
+type sessionDso struct {
+	fid    uint
+	output func(mutation *Mutation)
 }
 
 func NewHub(state State) Hub {
 	hub := &hubDso{}
 	hub.state = state
-	hub.clients = make(map[string]func(mutation *Mutation))
+	hub.sessions = make(map[string]*sessionDso)
 	return hub
 }
 
@@ -37,20 +42,28 @@ func (hub *hubDso) NextId() string {
 	return fmt.Sprintf("%d_%d", count, now)
 }
 
-func (hub *hubDso) Subscribe(id string, client func(mutation *Mutation)) {
-	hub.clients[id] = client
+func (hub *hubDso) Subscribe(sid string, fid uint, output func(mutation *Mutation)) {
+	session := &sessionDso{}
+	session.output = output
+	session.fid = fid
+	hub.sessions[sid] = session
 	mutation := &Mutation{}
-	mutation.Name = "init"
-	mutation.Args = hub.state.All()
-	mutation.Origin = id
-	client(mutation)
+	mutation.Session = sid
+	if fid == 0 {
+		mutation.Name = "all"
+		mutation.Args = hub.state.All()
+	} else {
+		mutation.Name = "one"
+		mutation.Args = hub.state.One(fid)
+	}
+	output(mutation)
 }
 
-func (hub *hubDso) Unsubscribe(id string) {
-	client := hub.clients[id]
-	if client != nil {
-		delete(hub.clients, id)
-		client(&Mutation{Name: "unsub"})
+func (hub *hubDso) Unsubscribe(sid string) {
+	session := hub.sessions[sid]
+	if session != nil {
+		delete(hub.sessions, sid)
+		session.output(&Mutation{Name: "unsub"})
 	}
 }
 
@@ -60,16 +73,24 @@ func (hub *hubDso) Apply(mutation *Mutation) {
 		trace("state.Apply", mutation, err)
 		return
 	}
-	for _, client := range hub.clients {
-		client(mutation)
+	for _, session := range hub.sessions {
+		if session.fid == 0 {
+			if mutation.Sid == 0 || mutation.Name == "rename" {
+				session.output(mutation)
+			}
+		} else {
+			if mutation.Fid == session.fid {
+				session.output(mutation)
+			}
+		}
 	}
 }
 
 func (hub *hubDso) Close() {
 	hub.state.Close()
 	mutation := &Mutation{Name: "close"}
-	for _, client := range hub.clients {
-		client(mutation)
+	for _, session := range hub.sessions {
+		session.output(mutation)
 	}
-	hub.clients = make(map[string]func(mutation *Mutation))
+	hub.sessions = nil
 }

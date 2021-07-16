@@ -17,9 +17,9 @@ func (core *coreDso) NextId() string {
 	return core.hub.NextId()
 }
 
-func (core *coreDso) Subscribe(id string, client func(mutation *Mutation)) {
+func (core *coreDso) Subscribe(sid string, fid uint, output func(mutation *Mutation)) {
 	core.queue <- func() {
-		core.hub.Subscribe(id, client)
+		core.hub.Subscribe(sid, fid, output)
 	}
 }
 

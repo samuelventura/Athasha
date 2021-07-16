@@ -5,7 +5,8 @@ import (
 )
 
 type State interface {
-	All() *InitArgs
+	All() *AllArgs
+	One(id uint) *OneArgs
 	Apply(mutation *Mutation) error
 	Close()
 }
@@ -38,21 +39,35 @@ func (state *stateDso) Apply(mutation *Mutation) error {
 		return state.applyCreate(mutation.Args.(*CreateArgs))
 	case "delete":
 		return state.applyDelete(mutation.Args.(*DeleteArgs))
+	case "update":
+		return state.applyUpdate(mutation.Args.(*UpdateArgs))
 	}
 	return fmt.Errorf("unknown mutation %v", mutation.Name)
 }
 
-func (state *stateDso) All() *InitArgs {
-	init := &InitArgs{}
-	init.Files = make([]*CreateArgs, 0, len(state.files))
+func (state *stateDso) All() *AllArgs {
+	all := &AllArgs{}
+	all.Files = make([]*CreateArgs, 0, len(state.files))
 	for _, file := range state.files {
 		mut := &CreateArgs{}
 		mut.Id = file.ID
 		mut.Name = file.Name
 		mut.Mime = file.Mime
-		init.Files = append(init.Files, mut)
+		all.Files = append(all.Files, mut)
 	}
-	return init
+	return all
+}
+
+func (state *stateDso) One(id uint) *OneArgs {
+	file, ok := state.files[id]
+	mut := &OneArgs{}
+	if ok {
+		mut.Id = file.ID
+		mut.Name = file.Name
+		mut.Mime = file.Mime
+		mut.Data = file.Data
+	}
+	return mut
 }
 
 func (state *stateDso) applyCreate(args *CreateArgs) error {
@@ -77,5 +92,14 @@ func (state *stateDso) applyDelete(args *DeleteArgs) error {
 	}
 	state.dao.Delete(args.Id)
 	delete(state.files, args.Id)
+	return nil
+}
+
+func (state *stateDso) applyUpdate(args *UpdateArgs) error {
+	if _, ok := state.files[args.Id]; !ok {
+		return fmt.Errorf("unknown file %v", args.Id)
+	}
+	file := state.dao.Update(args.Id, args.Data)
+	state.files[file.ID] = file
 	return nil
 }

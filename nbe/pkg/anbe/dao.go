@@ -11,12 +11,14 @@ type Dao interface {
 	Delete(id uint)
 	Create(name string, mime string) *FileDro
 	Rename(id uint, name string) *FileDro
+	Update(id uint, data string) *FileDro
 }
 
 type FileDro struct {
 	gorm.Model
 	Name string
 	Mime string
+	Data string
 }
 
 type daoDso struct {
@@ -59,6 +61,16 @@ func (dao *daoDso) Rename(id uint, name string) *FileDro {
 	result := dao.db.First(row, id)
 	panicIfError(result.Error)
 	row.Name = name
+	result = dao.db.Save(row)
+	panicIfError(result.Error)
+	return row
+}
+
+func (dao *daoDso) Update(id uint, data string) *FileDro {
+	row := &FileDro{}
+	result := dao.db.First(row, id)
+	panicIfError(result.Error)
+	row.Data = data
 	result = dao.db.Save(row)
 	panicIfError(result.Error)
 	return row

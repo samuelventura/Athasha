@@ -8,14 +8,14 @@ import env from "./environ"
 
 function App() {
   
-  function reducer(state, {name, args, origin}) {
+  function reducer(state, {name, args, session}) {
     // called twice on purpose by reactjs 
     // to detect side effects on strict mode
     // reducer must be pure
     switch(name){
-      case "init": {
+      case "all": {
         const next = Object.assign({}, state);
-        next.session = origin;
+        next.session = session;
         next.files = {};
         args.files.forEach(f => next.files[f.id] = f);
         return next;
@@ -23,7 +23,7 @@ function App() {
       case "create": {
         const next = Object.assign({}, state);
         next.files[args.id] = args;
-        if (next.session === origin) {
+        if (next.session === session) {
           next.selected = args;
         }
         return next;
@@ -52,7 +52,7 @@ function App() {
         return next;
       }
       default:
-        env.log("Unknown mutation", name, args, origin)
+        env.log("Unknown mutation", name, args, session)
         return state;
     }
   }
@@ -95,7 +95,7 @@ function App() {
       //immediate error when navigating back
       //toms is workaround for trottled reconnection
       //safari only, chrome and firefox work ok
-      ws = new WebSocket(env.wsURL);
+      ws = new WebSocket(env.wsURL + "/index");
       env.log("connected", to, ws)
       ws.onclose = (event) => {  
         env.log("ws.close", event);

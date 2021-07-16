@@ -3,6 +3,8 @@ package anbe
 import (
 	"encoding/json"
 	"fmt"
+	"math/bits"
+	"strconv"
 )
 
 func decodeMutation(bytes []byte) (mut *Mutation, err error) {
@@ -15,45 +17,62 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 	mm := mmi.(map[string]interface{})
 	mut.Name = mm["name"].(string)
 	switch mut.Name {
-	case "init":
+	case "all":
 		argm := mm["args"].(map[string]interface{})
-		args := &InitArgs{}
+		args := &AllArgs{}
 		files := argm["files"].([]interface{})
 		args.Files = make([]*CreateArgs, 0, len(files))
 		for _, fmi := range files {
 			fm := fmi.(map[string]interface{})
 			carg := &CreateArgs{}
-			carg.Id = uint(fm["id"].(float64))
+			carg.Id = parseId(fm["id"])
 			carg.Name = fm["name"].(string)
 			carg.Mime = fm["mime"].(string)
 			args.Files = append(args.Files, carg)
 		}
 		mut.Args = args
+	case "one":
+		argm := mm["args"].(map[string]interface{})
+		args := &OneArgs{}
+		args.Id = parseId(argm["id"])
+		args.Name = argm["name"].(string)
+		args.Mime = argm["mime"].(string)
+		args.Data = argm["data"].(string)
+		mut.Args = args
 	case "create":
 		argm := mm["args"].(map[string]interface{})
 		args := &CreateArgs{}
-		args.Id = decodeId(argm["id"])
+		args.Id = maybeId(argm["id"])
 		args.Name = argm["name"].(string)
 		args.Mime = argm["mime"].(string)
 		mut.Args = args
 	case "delete":
 		argm := mm["args"].(map[string]interface{})
 		args := &DeleteArgs{}
-		args.Id = uint(argm["id"].(float64))
+		args.Id = parseId(argm["id"])
 		mut.Args = args
+		mut.Fid = args.Id
 	case "rename":
 		argm := mm["args"].(map[string]interface{})
 		args := &RenameArgs{}
-		args.Id = uint(argm["id"].(float64))
+		args.Id = parseId(argm["id"])
 		args.Name = argm["name"].(string)
 		mut.Args = args
+		mut.Fid = args.Id
+	case "update":
+		argm := mm["args"].(map[string]interface{})
+		args := &UpdateArgs{}
+		args.Id = parseId(argm["id"])
+		args.Data = argm["data"].(string)
+		mut.Args = args
+		mut.Fid = args.Id
 	default:
 		err = fmt.Errorf("unkown mutation %s", mut.Name)
 	}
 	return
 }
 
-func decodeId(id interface{}) uint {
+func maybeId(id interface{}) uint {
 	switch v := id.(type) {
 	case float64:
 		return uint(v)
@@ -62,10 +81,23 @@ func decodeId(id interface{}) uint {
 	}
 }
 
+func parseId(id interface{}) uint {
+	switch v := id.(type) {
+	case float64:
+		return uint(v)
+	case string:
+		id, err := strconv.ParseUint(v, 10, bits.UintSize)
+		panicIfError(err)
+		return uint(id)
+	default:
+		return 0
+	}
+}
+
 func encodeMutation(mutation *Mutation) []byte {
 	mm := make(map[string]interface{})
 	mm["name"] = mutation.Name
-	mm["origin"] = mutation.Origin
+	mm["session"] = mutation.Session
 	args, err := encodeArgs(mutation.Name, mutation.Args)
 	panicIfError(err)
 	mm["args"] = args
@@ -76,8 +108,8 @@ func encodeMutation(mutation *Mutation) []byte {
 
 func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err error) {
 	switch name {
-	case "init":
-		args := argi.(*InitArgs)
+	case "all":
+		args := argi.(*AllArgs)
 		argm = make(map[string]interface{})
 		files := make([]map[string]interface{}, 0, len(args.Files))
 		for _, file := range args.Files {
@@ -88,6 +120,13 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 			files = append(files, fm)
 		}
 		argm["files"] = files
+	case "one":
+		args := argi.(*OneArgs)
+		argm = make(map[string]interface{})
+		argm["id"] = args.Id
+		argm["name"] = args.Name
+		argm["mime"] = args.Mime
+		argm["data"] = args.Data
 	case "create":
 		args := argi.(*CreateArgs)
 		argm = make(map[string]interface{})
@@ -103,6 +142,11 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm = make(map[string]interface{})
 		argm["id"] = args.Id
 		argm["name"] = args.Name
+	case "update":
+		args := argi.(*UpdateArgs)
+		argm = make(map[string]interface{})
+		argm["id"] = args.Id
+		argm["data"] = args.Data
 	default:
 		err = fmt.Errorf("unkown mutation %s", name)
 	}

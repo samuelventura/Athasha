@@ -29,10 +29,11 @@ go install github.com/samuelventura/athasha/nbe/cmd/anbe && anbe
 go clean -testcache
 go test github.com/samuelventura/athasha/nbe/pkg/anbe -v
 
-[DEVSETUP]
+[SCRIPT]
 MOD="github.com/samuelventura/athasha/nbe"
-cd nbe; go install $MOD/cmd/anbe && anbe
-cd nfe; npm start
+(cd nbe; go test $MOD/pkg/anbe)
+(cd nbe; go install $MOD/cmd/anbe && anbe)
+(cd nfe; npm start)
 
 [TODO]
 - Edit action button

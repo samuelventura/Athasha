@@ -1,6 +1,6 @@
 
-const devURL = "ws://localhost:5001/ws/index";
-const prodURL = process.env.PUBLIC_URL + "/ws/index";
+const devURL = "ws://localhost:5001/ws";
+const prodURL = process.env.PUBLIC_URL + "/ws";
 
 const isDev = process.env.NODE_ENV === 'development';
 

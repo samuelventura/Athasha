@@ -9,7 +9,7 @@ function FileRows(props) {
   }
 
   function handleEdit(file) {
-    window.location.href = env.href(`/edit/${file.id}`);
+    window.open(env.href(`/edit/${file.id}`), '_blank');
   }
 
   function handleRename(file) {
