@@ -2,7 +2,9 @@ import React, { useState, useEffect, useReducer } from 'react';
 
 import "./Editor.css";
 
-import env from "./environ"
+import env from "./environ";
+
+import Default from "./editor/Default";
 
 function Editor(props) {
   
@@ -14,6 +16,7 @@ function Editor(props) {
       case "one": {
         const next = Object.assign({}, state);
         next.session = session;
+        next.id = args.id;
         next.name = args.name;
         next.mime = args.mime;
         next.data = args.data;
@@ -47,8 +50,6 @@ function Editor(props) {
   const initial = {id:0, name:null, mime:null, data:null};
   const [state, dispatch] = useReducer(reducer, initial);
   const [socket, setSocket] = useState(null);
-  const [name, setName] = useState(null);
-  const [data, setData] = useState(null);
 
   function handleDispatch({name, args}) {
     if (!socket) {
@@ -64,14 +65,6 @@ function Editor(props) {
       default:
         env.log("Unknown mutation", name, args)
     }
-  }
-
-  function handleUpdate() {
-    handleDispatch({name: "update", args: {id: props.id, data}})
-  }
-
-  function handleRename() {
-    handleDispatch({name: "rename", args: {id: props.id, name}})
   }
 
   useEffect(() => {
@@ -114,15 +107,16 @@ function Editor(props) {
     return disconnect;
   }, [props.id]);
 
+  function router() {
+    switch(state.mime){
+      default:
+        return <Default state={state} dispatch={handleDispatch}/>
+    }
+  }
+
   return (
     <div className="Editor">
-      <h3>{props.id}</h3>
-      <h3>Name: {state.name}</h3>
-      <input type="text" state={name} onChange={e => setName(e.target.value)}/>
-      <button onClick={handleRename}>Rename</button>
-      <h3>Data: {state.data}</h3>
-      <input type="text" state={data} onChange={e => setData(e.target.value)}/>
-      <button onClick={handleUpdate}>Update</button>
+      {router()}
     </div>
   );
 }
