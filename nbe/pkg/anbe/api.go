@@ -11,19 +11,15 @@ type Mutation struct {
 }
 
 type AllArgs struct {
-	Files []*CreateArgs
+	Files []*OneArgs
 }
 
 type OneArgs struct {
-	Id   uint
-	Name string
-	Mime string
-	Data string
-}
-
-type UpdateArgs struct {
-	Id   uint
-	Data string
+	Id      uint
+	Name    string
+	Mime    string
+	Data    string
+	Enabled bool
 }
 
 type CreateArgs struct {
@@ -32,11 +28,21 @@ type CreateArgs struct {
 	Mime string
 }
 
+type DeleteArgs struct {
+	Id uint
+}
+
 type RenameArgs struct {
 	Id   uint
 	Name string
 }
 
-type DeleteArgs struct {
-	Id uint
+type UpdateArgs struct {
+	Id   uint
+	Data string
+}
+
+type EnableArgs struct {
+	Id      uint
+	Enabled bool
 }

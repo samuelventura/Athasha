@@ -19,6 +19,10 @@ function FileRows(props) {
     props.dispatch({name: "rename", args: {id: file.id, name}});
   }
 
+  function handleEnable(file, enabled) {
+    props.dispatch({name: "enable", args: {id: file.id, enabled}});
+  }
+
   function handleSelect(file) {
     props.dispatch({name: "select", args: file});
   }
@@ -28,16 +32,23 @@ function FileRows(props) {
       "FileSelected" : "";
   }
 
+  function enabledClass(file) {
+    return file.enabled ? 
+      "FileEnabled" : "FileDisabled";
+  }
+
   const rows = props.files.map(file => 
     <tr key={file.id} 
       onClick={() => handleSelect(file)} 
-      className={`FileRow ${selectedClass(file)}`}>
+      className={`FileRow ${selectedClass(file)} ${enabledClass(file)}`}>
       <td>
         <div className="FileName">{file.name} ({file.mime})</div>
-        <div className={`FileActions ${selectedClass(file)}`}>
+        <div className="FileActions">
         <button onClick={() => handleEdit(file)}>Edit</button>
           <button onClick={() => handleDelete(file)}>Delete</button>
           <button onClick={() => handleRename(file)}>Rename</button>
+          <button onClick={() => handleEnable(file, true)}>Enable</button>
+          <button onClick={() => handleEnable(file, false)}>Disable</button>
         </div>
       </td>
     </tr>

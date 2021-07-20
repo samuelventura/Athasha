@@ -74,14 +74,18 @@ func (hub *hubDso) Apply(mutation *Mutation) {
 		return
 	}
 	for _, session := range hub.sessions {
-		if session.fid == 0 {
-			if mutation.Sid == 0 || mutation.Name == "rename" {
+		switch {
+		case session.fid == 0:
+			switch {
+			case mutation.Sid == 0:
+				session.output(mutation)
+			case mutation.Name == "rename":
+				session.output(mutation)
+			case mutation.Name == "enable":
 				session.output(mutation)
 			}
-		} else {
-			if mutation.Fid == session.fid {
-				session.output(mutation)
-			}
+		case session.fid == mutation.Fid:
+			session.output(mutation)
 		}
 	}
 }

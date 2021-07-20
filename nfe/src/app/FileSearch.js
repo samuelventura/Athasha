@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function FileSearch(props) {
 
-  const [filter, setFilter] = useState(props.filter);
+  //useState called only once and not on avery prop change
+  const [filter, setFilter] = useState("");
   
   function handleChange(e) {
     setFilter(e.target.value);
@@ -19,6 +20,10 @@ function FileSearch(props) {
       props.onFilterChange(filter);
     }
   }
+
+  useEffect(()=>{
+    setFilter(props.filter)
+  }, [props])
 
   return (
     <div className="FileSearch">

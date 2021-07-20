@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 
 import "./App.css";
 
 import FileBrowser from "./app/FileBrowser";
 
+import socket from "./socket"
 import env from "./environ"
 
 function App() {
@@ -38,6 +39,11 @@ function App() {
         next.files[args.id].name = args.name;
         return next;
       }
+      case "enable": {
+        const next = Object.assign({}, state);
+        next.files[args.id].enabled = args.enabled;
+        return next;
+      }
       case "select": {
         const next = Object.assign({}, state);
         next.selected = args;
@@ -51,21 +57,26 @@ function App() {
         next.session = null;
         return next;
       }
+      case "send": {
+        const next = Object.assign({}, state);
+        next.send = args;
+        return next;
+      }
       default:
         env.log("Unknown mutation", name, args, session)
         return state;
     }
   }
 
-  const initial = {files:{}, selected:{}, session:null};
+  const initial = {
+    files: {}, 
+    selected: {}, 
+    session: null,
+    send: socket.send
+  };
   const [state, dispatch] = useReducer(reducer, initial);
-  const [socket, setSocket] = useState(null);
 
   function handleDispatch({name, args}) {
-    if (!socket) {
-      env.log("Null socket dispatch", name, args)
-      return;
-    }
     switch(name) {
       case "select":
         dispatch({name, args});
@@ -73,8 +84,9 @@ function App() {
       case "create":
       case "delete":
       case "rename":
+      case "enable":
         env.log("ws.send", {name, args});
-        socket.send(JSON.stringify({name, args}));
+        state.send(JSON.stringify({name, args}));
         break;
       default:
         env.log("Unknown mutation", name, args)
@@ -82,43 +94,7 @@ function App() {
   }
 
   useEffect(() => {
-    let toms = 0;
-    let to = null;
-    let ws = null;
-    function disconnect() {
-      env.log("disconnect", to, ws)
-      if (to) clearTimeout(to);
-      if (ws) ws.close();
-    }
-    function connect() {
-      env.log("connect", to, ws)
-      //immediate error when navigating back
-      //toms is workaround for trottled reconnection
-      //safari only, chrome and firefox work ok
-      ws = new WebSocket(env.wsURL + "/index");
-      env.log("connected", to, ws)
-      ws.onclose = (event) => {  
-        env.log("ws.close", event);
-        setSocket(null);
-        dispatch({name: "close"});
-        to = setTimeout(connect, toms);
-        toms += 1000; toms %= 4000;
-      }
-      ws.onmessage = (event) => {
-        env.log("ws.message", event);
-        dispatch(JSON.parse(event.data));
-      }
-      ws.onerror = (event) => {
-        env.log("ws.error", event);
-      }
-      ws.onopen = (event) => {
-        env.log("ws.open", event);
-        setSocket(ws);
-        toms = 0;
-      }
-    }
-    to = setTimeout(connect, 0);
-    return disconnect;
+    return socket.create(dispatch, "/index");
   }, []);
 
   return (

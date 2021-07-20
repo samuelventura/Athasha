@@ -97,8 +97,12 @@ func (client *clientDso) wait() {
 }
 
 func (client *clientDso) writer(mutation *Mutation) {
+	//closing a closed channel panics
+	defer recoverAndLogPanic()
 	switch mutation.Name {
-	case "all", "create", "delete", "rename":
+	case "all", "create", "delete":
+		client.output <- mutation
+	case "rename", "enable":
 		client.output <- mutation
 	case "one", "update":
 		client.output <- mutation

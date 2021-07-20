@@ -21,13 +21,14 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		argm := mm["args"].(map[string]interface{})
 		args := &AllArgs{}
 		files := argm["files"].([]interface{})
-		args.Files = make([]*CreateArgs, 0, len(files))
+		args.Files = make([]*OneArgs, 0, len(files))
 		for _, fmi := range files {
 			fm := fmi.(map[string]interface{})
-			carg := &CreateArgs{}
+			carg := &OneArgs{}
 			carg.Id = parseId(fm["id"])
 			carg.Name = fm["name"].(string)
 			carg.Mime = fm["mime"].(string)
+			carg.Enabled = fm["enabled"].(bool)
 			args.Files = append(args.Files, carg)
 		}
 		mut.Args = args
@@ -38,6 +39,7 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		args.Name = argm["name"].(string)
 		args.Mime = argm["mime"].(string)
 		args.Data = argm["data"].(string)
+		args.Enabled = argm["enabled"].(bool)
 		mut.Args = args
 	case "create":
 		argm := mm["args"].(map[string]interface{})
@@ -64,6 +66,13 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		args := &UpdateArgs{}
 		args.Id = parseId(argm["id"])
 		args.Data = argm["data"].(string)
+		mut.Args = args
+		mut.Fid = args.Id
+	case "enable":
+		argm := mm["args"].(map[string]interface{})
+		args := &EnableArgs{}
+		args.Id = parseId(argm["id"])
+		args.Enabled = argm["enabled"].(bool)
 		mut.Args = args
 		mut.Fid = args.Id
 	default:
@@ -117,6 +126,7 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 			fm["id"] = file.Id
 			fm["name"] = file.Name
 			fm["mime"] = file.Mime
+			fm["enabled"] = file.Enabled
 			files = append(files, fm)
 		}
 		argm["files"] = files
@@ -127,6 +137,7 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm["name"] = args.Name
 		argm["mime"] = args.Mime
 		argm["data"] = args.Data
+		argm["enabled"] = args.Enabled
 	case "create":
 		args := argi.(*CreateArgs)
 		argm = make(map[string]interface{})
@@ -147,6 +158,11 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm = make(map[string]interface{})
 		argm["id"] = args.Id
 		argm["data"] = args.Data
+	case "enable":
+		args := argi.(*EnableArgs)
+		argm = make(map[string]interface{})
+		argm["id"] = args.Id
+		argm["enabled"] = args.Enabled
 	default:
 		err = fmt.Errorf("unkown mutation %s", name)
 	}

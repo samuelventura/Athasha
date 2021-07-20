@@ -7,14 +7,18 @@ table, th, td {
   display: inline;
 }
 
+.FileSelected {
+  background-color:cyan;
+}
+
+.FileDisabled .FileName {
+  color: gray;
+}
+
 .FileActions {
   display: none;
 }
 
-.FileActions.FileSelected {
+.FileSelected .FileActions {
   display: block;
-}
-
-.FileRow.FileSelected {
-  background-color:cyan;
 }

@@ -39,7 +39,7 @@ function FileBrowser(props) {
     <div className="FileBrowser">
       <FileNew dispatch={props.dispatch}/>
       <FileSearch 
-        filter={filter} 
+        filter={filter}
         onFilterChange={handleFilterChange}
         />
       <table className="fileTable">

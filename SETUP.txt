@@ -39,7 +39,12 @@ MOD="github.com/samuelventura/athasha/nbe"
 - Edit action button
 - File selection on click
 - File auto selection on create
+- File auto edit on create
 - Show file actions only for selected file
 - File editor auto launch on create
 - File rename action with modal
 - File delete modal confirmation
+- Disable flag to stop service and prevent start on boot
+- Immediatelly update and restarts of enabled services
+
+

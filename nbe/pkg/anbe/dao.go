@@ -12,13 +12,15 @@ type Dao interface {
 	Create(name string, mime string) *FileDro
 	Rename(id uint, name string) *FileDro
 	Update(id uint, data string) *FileDro
+	Enable(id uint, enabled bool) *FileDro
 }
 
 type FileDro struct {
 	gorm.Model
-	Name string
-	Mime string
-	Data string
+	Name    string
+	Mime    string
+	Data    string
+	Enabled bool
 }
 
 type daoDso struct {
@@ -26,9 +28,12 @@ type daoDso struct {
 }
 
 func NewDao(path string) Dao {
-	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
+	dialect := sqlite.Open(path)
+	config := &gorm.Config{}
+	db, err := gorm.Open(dialect, config)
 	panicIfError(err)
-	db.AutoMigrate(&FileDro{})
+	err = db.AutoMigrate(&FileDro{})
+	panicIfError(err)
 	return &daoDso{db}
 }
 
@@ -44,16 +49,16 @@ func (dao *daoDso) All() (files []FileDro) {
 	return
 }
 
-func (dao *daoDso) Delete(id uint) {
-	result := dao.db.Delete(&FileDro{}, id)
-	panicIfError(result.Error)
-}
-
 func (dao *daoDso) Create(name string, mime string) *FileDro {
 	row := &FileDro{Name: name, Mime: mime}
 	result := dao.db.Create(row)
 	panicIfError(result.Error)
 	return row
+}
+
+func (dao *daoDso) Delete(id uint) {
+	result := dao.db.Delete(&FileDro{}, id)
+	panicIfError(result.Error)
 }
 
 func (dao *daoDso) Rename(id uint, name string) *FileDro {
@@ -71,6 +76,16 @@ func (dao *daoDso) Update(id uint, data string) *FileDro {
 	result := dao.db.First(row, id)
 	panicIfError(result.Error)
 	row.Data = data
+	result = dao.db.Save(row)
+	panicIfError(result.Error)
+	return row
+}
+
+func (dao *daoDso) Enable(id uint, enabled bool) *FileDro {
+	row := &FileDro{}
+	result := dao.db.First(row, id)
+	panicIfError(result.Error)
+	row.Enabled = enabled
 	result = dao.db.Save(row)
 	panicIfError(result.Error)
 	return row
