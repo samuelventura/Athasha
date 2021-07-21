@@ -1,0 +1,14 @@
+.FileName * {
+    display: inline;
+}
+
+.FileName {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.NameChip {
+    margin-left: 5px;
+    font-size: small;
+}

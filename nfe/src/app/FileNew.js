@@ -19,11 +19,11 @@ function FileNew(props) {
         value={state}
         onChange={handleChange}>
           <option value="" disabled>New...</option>
-          <option>Serial</option>
-          <option>FileType2</option>
-          <option>FileType3</option>
-          <option>FileType4</option>
-          <option>FileType5</option>
+          <option>Script</option>
+          <option>Default1</option>
+          <option>Default2</option>
+          <option>Default3</option>
+          <option>Default4</option>
         </select>
     </div>
   );

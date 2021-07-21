@@ -13,7 +13,7 @@ function FileRows(props) {
   }
 
   function handleRename(file) {
-    const name = window.prompt(`Rename file '${file.name}'`, file.name)
+    const name = window.prompt(`Rename file '${file.name}'`, file.name);
     if (name === null) return;
     if (name.trim().length === 0) return;
     props.dispatch({name: "rename", args: {id: file.id, name}});

@@ -25,7 +25,7 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		for _, fmi := range files {
 			fm := fmi.(map[string]interface{})
 			carg := &OneArgs{}
-			carg.Id = parseId(fm["id"])
+			carg.Id = parseUint(fm["id"])
 			carg.Name = fm["name"].(string)
 			carg.Mime = fm["mime"].(string)
 			carg.Enabled = fm["enabled"].(bool)
@@ -35,43 +35,45 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 	case "one":
 		argm := mm["args"].(map[string]interface{})
 		args := &OneArgs{}
-		args.Id = parseId(argm["id"])
+		args.Id = parseUint(argm["id"])
 		args.Name = argm["name"].(string)
 		args.Mime = argm["mime"].(string)
 		args.Data = argm["data"].(string)
+		args.Version = parseUint(argm["version"])
 		args.Enabled = argm["enabled"].(bool)
 		mut.Args = args
 	case "create":
 		argm := mm["args"].(map[string]interface{})
 		args := &CreateArgs{}
-		args.Id = maybeId(argm["id"])
+		args.Id = maybeUint(argm["id"])
 		args.Name = argm["name"].(string)
 		args.Mime = argm["mime"].(string)
 		mut.Args = args
 	case "delete":
 		argm := mm["args"].(map[string]interface{})
 		args := &DeleteArgs{}
-		args.Id = parseId(argm["id"])
+		args.Id = parseUint(argm["id"])
 		mut.Args = args
 		mut.Fid = args.Id
 	case "rename":
 		argm := mm["args"].(map[string]interface{})
 		args := &RenameArgs{}
-		args.Id = parseId(argm["id"])
+		args.Id = parseUint(argm["id"])
 		args.Name = argm["name"].(string)
 		mut.Args = args
 		mut.Fid = args.Id
 	case "update":
 		argm := mm["args"].(map[string]interface{})
 		args := &UpdateArgs{}
-		args.Id = parseId(argm["id"])
+		args.Id = parseUint(argm["id"])
 		args.Data = argm["data"].(string)
+		args.Version = parseUint(argm["version"])
 		mut.Args = args
 		mut.Fid = args.Id
 	case "enable":
 		argm := mm["args"].(map[string]interface{})
 		args := &EnableArgs{}
-		args.Id = parseId(argm["id"])
+		args.Id = parseUint(argm["id"])
 		args.Enabled = argm["enabled"].(bool)
 		mut.Args = args
 		mut.Fid = args.Id
@@ -81,7 +83,7 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 	return
 }
 
-func maybeId(id interface{}) uint {
+func maybeUint(id interface{}) uint {
 	switch v := id.(type) {
 	case float64:
 		return uint(v)
@@ -90,7 +92,7 @@ func maybeId(id interface{}) uint {
 	}
 }
 
-func parseId(id interface{}) uint {
+func parseUint(id interface{}) uint {
 	switch v := id.(type) {
 	case float64:
 		return uint(v)
@@ -137,6 +139,7 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm["name"] = args.Name
 		argm["mime"] = args.Mime
 		argm["data"] = args.Data
+		argm["version"] = args.Version
 		argm["enabled"] = args.Enabled
 	case "create":
 		args := argi.(*CreateArgs)
@@ -158,6 +161,7 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm = make(map[string]interface{})
 		argm["id"] = args.Id
 		argm["data"] = args.Data
+		argm["version"] = args.Version
 	case "enable":
 		args := argi.(*EnableArgs)
 		argm = make(map[string]interface{})

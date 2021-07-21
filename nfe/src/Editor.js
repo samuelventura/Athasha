@@ -6,22 +6,27 @@ import socket from "./socket"
 import env from "./environ";
 
 import Default from "./editor/Default";
+import Script from "./editor/Script";
 
 function Editor(props) {
   
-  function reducer(state, {name, args, session}) {
+  function reducer(state, {session, name, args}) {
     // called twice on purpose by reactjs 
     // to detect side effects on strict mode
     // reducer must be pure
     switch(name){
       case "one": {
         const next = Object.assign({}, state);
-        next.session = session;
+        //synced when equal
+        next.session.one = session;
+        next.session.update = session;
         next.id = args.id;
         next.name = args.name;
         next.mime = args.mime;
         next.data = args.data;
+        next.version = args.version;
         next.enabled = args.enabled;
+        next.connected = true;
         return next;
       }
       case "rename": {
@@ -32,6 +37,8 @@ function Editor(props) {
       case "update": {
         const next = Object.assign({}, state);
         next.data = args.data;
+        next.version = args.version;
+        next.session.update = session;
         return next;
       }
       case "enable": {
@@ -45,17 +52,13 @@ function Editor(props) {
         return next;
       }
       case "close": {
-        //flickers on navigating back (reconnect)
         const next = Object.assign({}, state);
-        next.id = 0;
-        next.name = "";
-        next.mime = "";
-        next.data = "";
-        next.enabled = false;
+        //keep state to avoid default editor showing
+        next.connected = false;
         return next;
       }
       default:
-        env.log("Unknown mutation", name, args, session)
+        env.log("Unknown mutation", session, name, args)
         return state;
     }
   }
@@ -66,7 +69,10 @@ function Editor(props) {
     name: "", 
     mime: "", 
     data: "",
+    version: 0,
     enabled: false,
+    session: {},
+    connected: false,
     send: socket.send,
   };
   const [state, dispatch] = useReducer(reducer, initial);
@@ -90,8 +96,10 @@ function Editor(props) {
 
   function router() {
     switch(state.mime) {
+      case "Script":
+        return <Script id={props.id} state={state} dispatch={handleDispatch}/>
       default:
-        return <Default state={state} dispatch={handleDispatch}/>
+        return <Default id={props.id} state={state} dispatch={handleDispatch}/>
     }
   }
 

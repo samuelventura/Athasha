@@ -46,5 +46,9 @@ MOD="github.com/samuelventura/athasha/nbe"
 - File delete modal confirmation
 - Disable flag to stop service and prevent start on boot
 - Immediatelly update and restarts of enabled services
+- Default editor shown while disconnected (better default)
+- Throttle code mirror changes (timed buffer)
+- Remove version, session is enough
+
 
 

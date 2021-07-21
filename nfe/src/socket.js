@@ -15,7 +15,7 @@ function create(dispatch, path) {
   }
 
   function send(data) {
-    env.log("send", disposed, closed, data)
+    //env.log("send", disposed, closed, data)
     if (disposed) return;
     if (closed) return;
     ws.send(data)
@@ -37,8 +37,10 @@ function create(dispatch, path) {
       toms += 1000; toms %= 4000;
     }
     ws.onmessage = (event) => {
-      env.log("ws.message", event, event.data);
-      dispatch(JSON.parse(event.data));
+      //env.log("ws.message", event, event.data);
+      const msg = JSON.parse(event.data)
+      env.log("ws.message", event, msg);
+      dispatch(msg);
     }
     ws.onerror = (event) => {
       env.log("ws.error", event);

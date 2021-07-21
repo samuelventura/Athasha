@@ -2,6 +2,7 @@ package anbe
 
 import (
 	"fmt"
+	"log"
 	"math/bits"
 	"net"
 	"strconv"
@@ -109,7 +110,7 @@ func (client *clientDso) writer(mutation *Mutation) {
 	case "unsub", "close":
 		close(client.output)
 	default:
-		close(client.output)
+		log.Println("Unknown", mutation.Name)
 	}
 }
 

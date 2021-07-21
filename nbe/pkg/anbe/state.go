@@ -2,6 +2,7 @@ package anbe
 
 import (
 	"fmt"
+	"strings"
 )
 
 type State interface {
@@ -69,12 +70,19 @@ func (state *stateDso) One(id uint) *OneArgs {
 		mut.Name = file.Name
 		mut.Mime = file.Mime
 		mut.Data = file.Data
+		mut.Version = file.Version
 		mut.Enabled = file.Enabled
 	}
 	return mut
 }
 
 func (state *stateDso) applyCreate(args *CreateArgs) error {
+	if len(strings.TrimSpace(args.Name)) == 0 {
+		return fmt.Errorf("empty name not allowed")
+	}
+	if len(strings.TrimSpace(args.Mime)) == 0 {
+		return fmt.Errorf("empty mime not allowed")
+	}
 	file := state.dao.Create(args.Name, args.Mime)
 	state.files[file.ID] = file
 	args.Id = file.ID
@@ -91,6 +99,9 @@ func (state *stateDso) applyDelete(args *DeleteArgs) error {
 }
 
 func (state *stateDso) applyRename(args *RenameArgs) error {
+	if len(strings.TrimSpace(args.Name)) == 0 {
+		return fmt.Errorf("empty name not allowed")
+	}
 	if _, ok := state.files[args.Id]; !ok {
 		return fmt.Errorf("unknown file %v", args.Id)
 	}
@@ -100,11 +111,17 @@ func (state *stateDso) applyRename(args *RenameArgs) error {
 }
 
 func (state *stateDso) applyUpdate(args *UpdateArgs) error {
-	if _, ok := state.files[args.Id]; !ok {
+	file, ok := state.files[args.Id]
+	if !ok {
 		return fmt.Errorf("unknown file %v", args.Id)
 	}
-	file := state.dao.Update(args.Id, args.Data)
+	if file.Version != args.Version {
+		return fmt.Errorf("file %v version mismatch c:%v n:%v",
+			args.Id, file.Version, args.Version)
+	}
+	file = state.dao.Update(args.Id, args.Data)
 	state.files[file.ID] = file
+	args.Version++
 	return nil
 }
 
