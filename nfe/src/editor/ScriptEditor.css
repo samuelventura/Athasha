@@ -1,18 +1,15 @@
-.FileName * {
+.ScriptTop * {
     display: inline;
 }
 
-.FileName {
+.ScriptTop {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 20px;
 }
 
-.NameChip {
-    margin-left: 5px;
-    font-size: small;
-}
-
+/* fixed unscrollable viewport */
 html, body {margin: 0; height: 100%; overflow: hidden}
 
 .ScriptEditor {
@@ -21,7 +18,7 @@ html, body {margin: 0; height: 100%; overflow: hidden}
     flex-direction: column;
 }
 
-.FileName {
+.ScriptBottom {
     height: 20px;
 }
 
@@ -29,7 +26,12 @@ html, body {margin: 0; height: 100%; overflow: hidden}
     flex-grow: 1;
 }
 
-/* percetages mess scrollbars */
+/* percentages mess scrollbars */
 .CodeMirror {
-    height: calc(100vh - 20px);
+    height: calc(100vh - 40px);
+}
+
+.FileChip {
+    margin-left: 5px;
+    font-size: small;
 }

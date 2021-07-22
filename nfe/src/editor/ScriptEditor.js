@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 import CodeEditor from './CodeEditor';
+//after code editor to override styles
 import "./ScriptEditor.css";
 
+import keyboardJS from "keyboardjs"
 import env from "../environ"
 
-//FIXME On save ES6 linter
-//FIXME On save callback
+//[ ] On save ES6 linter
+//[ ] Diff confirm out of sync save https://diff2html.xyz
+//[ ] Single mime with multiple templates
+//[x] Save/run/enable/disable keyboard shortcuts
 function ScriptEditor(props) {
   
   const [id, setId] = useState(0);
@@ -18,6 +22,25 @@ function ScriptEditor(props) {
       setData(props.state.data);
     }
   }, [props, id])
+
+  useEffect(()=>{
+    const save = () => handleSave()
+    const run = () => handleRun()
+    const enable = () => handleEnable(true)
+    const disable = () => handleEnable(false)
+    //cmd+s is page save already
+    //cmd+r is page refresh already
+    keyboardJS.bind("f2", save)
+    keyboardJS.bind("f5", run)
+    keyboardJS.bind("f6", enable)
+    keyboardJS.bind("f7", disable)
+    return () => {
+      keyboardJS.unbind("f2", save)
+      keyboardJS.unbind("f5", run)
+      keyboardJS.unbind("f6", enable)
+      keyboardJS.unbind("f7", disable)
+      }
+  })
 
   function handleRename() {
     const file = props.state;
@@ -62,20 +85,14 @@ function ScriptEditor(props) {
 
   return (
     <div className="ScriptEditor">
-      <div className="FileName">
-        <span>
-          <h3 onClick={handleRename} 
-            title="Click to rename">{props.state.name}</h3>
-          <span className="NameChip">{props.state.enabled ? "Enabled" : "Disabled"}</span>
-          <span className="NameChip">{props.state.connected ? "Online" : "Offline"}</span>
-          <span className="NameChip">{inSync() ? "InSync" : "OutOfSync"}</span>
-          <span className="NameChip">{isDirty() ? "Dirty" : "Clean"}</span>
-        </span>
+      <div className="ScriptTop">
+        <h3 className="FileName" onClick={handleRename}
+          title="Click to rename">{props.state.name}</h3>
         <span className="FileActions">
-          <button onClick={handleSave}>Save</button>
-          <button onClick={handleRun}>Run</button>
-          <button onClick={() => handleEnable(true)}>Enable</button>
-          <button onClick={() => handleEnable(false)}>Disable</button>
+          <button onClick={handleSave}>F2 Save</button>
+          <button onClick={handleRun}>F5 Run</button>
+          <button onClick={() => handleEnable(true)}>F6 Enable</button>
+          <button onClick={() => handleEnable(false)}>F7 Disable</button>
         </span>
       </div>
       <CodeEditor 
@@ -83,6 +100,12 @@ function ScriptEditor(props) {
         value={data}
         onChange={handleChange}
       />
+      <div className="ScriptBottom">
+        <span className="FileChip">{props.state.enabled ? "Enabled" : "Disabled"}</span>
+        <span className="FileChip">{props.state.connected ? "Online" : "Offline"}</span>
+        <span className="FileChip">{inSync() ? "InSync" : "OutOfSync"}</span>
+        <span className="FileChip">{isDirty() ? "Dirty" : "Clean"}</span>
+      </div>
     </div>
   );
 }
