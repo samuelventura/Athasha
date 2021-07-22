@@ -12,3 +12,24 @@
     margin-left: 5px;
     font-size: small;
 }
+
+html, body {margin: 0; height: 100%; overflow: hidden}
+
+.ScriptEditor {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.FileName {
+    height: 20px;
+}
+
+.CodeEditor {
+    flex-grow: 1;
+}
+
+/* percetages mess scrollbars */
+.CodeMirror {
+    height: calc(100vh - 20px);
+}

@@ -48,6 +48,6 @@ MOD="github.com/samuelventura/athasha/nbe"
 - Immediatelly update and restarts of enabled services
 - Default editor shown while disconnected (better default)
 - Throttle code mirror changes (timed buffer)
-
+- Prompts can be blocked by FF, use modals
 
 

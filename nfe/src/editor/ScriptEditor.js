@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import "./ScriptEditor.css";
-
 import CodeEditor from './CodeEditor';
+import "./ScriptEditor.css";
 
 import env from "../environ"
 
@@ -33,7 +32,6 @@ function ScriptEditor(props) {
   }
   
   function handleSave() {
-    env.log("handleSave")
     const id = props.id;
     props.dispatch({name: "update", args: {id, data}})
   }

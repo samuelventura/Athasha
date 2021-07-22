@@ -25,6 +25,7 @@ function CodeEditor(props) {
       mode: mode,
       tabSize: 2,
     })
+    //cm.setSize("100%", "100%")
     setCm(cm)
     return () => { cm.toTextArea() }
   }, [mode])

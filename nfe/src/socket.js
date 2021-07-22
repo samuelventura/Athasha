@@ -7,8 +7,8 @@ function create(dispatch, path) {
   let closed = true
   let disposed = false
 
-  function safe(cb) {
-    try { cb() }
+  function safe(action) {
+    try { action() }
     catch(e) { env.log("exception", e) }
   }
 
@@ -19,11 +19,11 @@ function create(dispatch, path) {
     if (ws) safe(() => ws.close())
   }
 
-  function send(data) {
-    env.log("ws.send", disposed, closed, data);
+  function send(msg) {
+    env.log("ws.send", disposed, closed, msg);
     if (disposed) return
     if (closed) return
-    safe(() => ws.send(JSON.stringify(data)) )
+    safe(() => ws.send(JSON.stringify(msg)) )
   }
 
   function connect() {
@@ -36,8 +36,8 @@ function create(dispatch, path) {
     ws.onclose = (event) => {  
       env.log("ws.close", event)
       closed = true
-      dispatch({name: "close"})
       if (disposed) return
+      dispatch({name: "close"})
       to = setTimeout(connect, toms)
       toms += 1000 
       toms %= 4000
@@ -62,8 +62,8 @@ function create(dispatch, path) {
   return dispose
 }
 
-function send(data) {
-  env.log("nop.send", data)
+function send(msg) {
+  env.log("nop.send", msg)
 }
 
 var socket = {create, send}
