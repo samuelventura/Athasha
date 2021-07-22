@@ -1,0 +1,45 @@
+.ScriptTop * {
+    display: inline;
+}
+
+.ScriptTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 20px;
+}
+
+/* fixed unscrollable viewport */
+html, body {margin: 0; height: 100%; overflow: hidden}
+
+.ScriptEditor {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.ScriptBottom {
+    height: 20px;
+}
+
+.CodeEditor {
+    flex-grow: 1;
+}
+
+/* percentages mess scrollbars */
+.CodeMirror {
+    height: calc(100vh - 40px);
+}
+
+.FileChip {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.FileActions * {
+    font-size: 10px;
+}
+
+.FileName {
+    font-size: 18px;
+}

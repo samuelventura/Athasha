@@ -17,7 +17,6 @@ type AllArgs struct {
 type OneArgs struct {
 	Id      uint
 	Name    string
-	Mime    string
 	Data    string
 	Enabled bool
 }
@@ -25,7 +24,7 @@ type OneArgs struct {
 type CreateArgs struct {
 	Id   uint
 	Name string
-	Mime string
+	Data string
 }
 
 type DeleteArgs struct {

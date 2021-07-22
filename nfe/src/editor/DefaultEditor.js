@@ -27,7 +27,6 @@ function DefaultEditor(props) {
     <div className="DefaultEditor">
       <h1>ID: {props.state.id}</h1>
       <h3>Enabled: {props.state.enabled ? "true" : "false"}</h3>
-      <h3>Mime: {props.state.mime}</h3>
       <h3>Name: {props.state.name}</h3>
       <input type="text" value={name} onChange={e => setName(e.target.value)}/>
       <br/>

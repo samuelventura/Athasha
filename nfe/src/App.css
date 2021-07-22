@@ -22,3 +22,14 @@ table, th, td {
 .FileSelected .FileActions {
   display: block;
 }
+
+.FileHeader th {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 320px;
+}
+
+.FileTable { margin: 0 auto; }
+
+body { text-align: center; }

@@ -42,7 +42,7 @@ function FileBrowser(props) {
         filter={filter}
         onFilterChange={handleFilterChange}
         />
-      <table className="fileTable">
+      <table className="FileTable">
         <FileHeader sort={sort}
           onSortChange={handleSortChange}/>
         <FileRows files={viewFiles()} 

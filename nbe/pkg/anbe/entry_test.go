@@ -22,18 +22,18 @@ func TestEntry(t *testing.T) {
 	all := readMutation(conn)
 	assert.Equal(t, "all", all.Name)
 	assert.Equal(t, 0, len(all.Args.(*AllArgs).Files))
-	postCreate(conn, "name1", "mime1")
+	postCreate(conn, "name1", "data1")
 	create1 := readMutation(conn)
 	trace("create1", create1)
 	assert.Equal(t, "create", create1.Name)
 	assert.Equal(t, "name1", create1.Args.(*CreateArgs).Name)
-	assert.Equal(t, "mime1", create1.Args.(*CreateArgs).Mime)
-	postCreate(conn, "name2", "mime2")
+	assert.Equal(t, "data1", create1.Args.(*CreateArgs).Data)
+	postCreate(conn, "name2", "data2")
 	create2 := readMutation(conn)
 	trace("create2", create2)
 	assert.Equal(t, "create", create2.Name)
 	assert.Equal(t, "name2", create2.Args.(*CreateArgs).Name)
-	assert.Equal(t, "mime2", create2.Args.(*CreateArgs).Mime)
+	assert.Equal(t, "data2", create2.Args.(*CreateArgs).Data)
 	postDelete(conn, create2.Args.(*CreateArgs).Id)
 	delete := readMutation(conn)
 	trace("delete", delete)
@@ -66,10 +66,10 @@ func readMutation(conn *websocket.Conn) *Mutation {
 	return mut
 }
 
-func postCreate(conn *websocket.Conn, name string, mime string) {
+func postCreate(conn *websocket.Conn, name string, data string) {
 	args := &CreateArgs{}
 	args.Name = name
-	args.Mime = mime
+	args.Data = data
 	mut := &Mutation{Name: "create", Args: args}
 	bytes := encodeMutation(mut)
 	_, err := conn.Write(bytes)

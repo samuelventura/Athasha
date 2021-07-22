@@ -1,12 +1,11 @@
 import React, { useEffect, useReducer } from 'react';
 
-import "./Editor.css";
-
 import socket from "./socket"
 import env from "./environ";
 
-import DefaultEditor from "./editor/DefaultEditor";
 import ScriptEditor from "./editor/ScriptEditor";
+//after code editor to override styles
+import "./Editor.css";
 
 function Editor(props) {
   
@@ -17,12 +16,10 @@ function Editor(props) {
     switch(name){
       case "one": {
         const next = Object.assign({}, state);
-        //synced when equal
         next.session.one = session;
-        next.session.update = session;
+        next.session.update = null;
         next.id = args.id;
         next.name = args.name;
-        next.mime = args.mime;
         next.data = args.data;
         next.enabled = args.enabled;
         next.connected = true;
@@ -66,7 +63,6 @@ function Editor(props) {
   const initial = {
     id: 0, 
     name: "", 
-    mime: "", 
     data: "",
     enabled: false,
     session: {},
@@ -91,18 +87,9 @@ function Editor(props) {
     return socket.create(dispatch, `/edit/${props.id}`);
   }, [props.id]);
 
-  function router() {
-    switch(state.mime) {
-      case "Script":
-        return <ScriptEditor id={props.id} state={state} dispatch={handleDispatch}/>
-      default:
-        return <DefaultEditor id={props.id} state={state} dispatch={handleDispatch}/>
-    }
-  }
-
   return (
     <div className="Editor">
-      {router()}
+       <ScriptEditor id={props.id} state={state} dispatch={handleDispatch}/>
     </div>
   );
 }

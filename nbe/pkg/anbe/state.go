@@ -55,7 +55,6 @@ func (state *stateDso) All() *AllArgs {
 		mut := &OneArgs{}
 		mut.Id = file.ID
 		mut.Name = file.Name
-		mut.Mime = file.Mime
 		mut.Enabled = file.Enabled
 		all.Files = append(all.Files, mut)
 	}
@@ -68,7 +67,6 @@ func (state *stateDso) One(id uint) *OneArgs {
 	if ok {
 		mut.Id = file.ID
 		mut.Name = file.Name
-		mut.Mime = file.Mime
 		mut.Data = file.Data
 		mut.Enabled = file.Enabled
 	}
@@ -79,10 +77,7 @@ func (state *stateDso) applyCreate(args *CreateArgs) error {
 	if len(strings.TrimSpace(args.Name)) == 0 {
 		return fmt.Errorf("empty name not allowed")
 	}
-	if len(strings.TrimSpace(args.Mime)) == 0 {
-		return fmt.Errorf("empty mime not allowed")
-	}
-	file := state.dao.Create(args.Name, args.Mime)
+	file := state.dao.Create(args.Name, args.Data)
 	state.files[file.ID] = file
 	args.Id = file.ID
 	return nil

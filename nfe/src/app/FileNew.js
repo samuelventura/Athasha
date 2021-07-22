@@ -3,13 +3,18 @@ import React, { useState } from 'react';
 function FileNew(props) {
 
   const [state, setState] = useState("");
+
+  const templates = {
+    "Empty Script": "",
+  }
   
   function handleChange(e) {
     setState(""); //trigger rendering
-    const mime = e.target.value;
-    const name = window.prompt(`Name for New ${mime}`, `New ${mime}`);
+    const template = e.target.value;
+    const name = window.prompt(`Name for New ${template}`, `New ${template}`);
     if (name === null) return;
-    props.dispatch({name: "create", args: {name, mime}});
+    const data = templates[template]
+    props.dispatch({name: "create", args: {name, data}});
   }
 
   return (
@@ -19,11 +24,7 @@ function FileNew(props) {
         value={state}
         onChange={handleChange}>
           <option value="" disabled>New...</option>
-          <option>Script</option>
-          <option>Default1</option>
-          <option>Default2</option>
-          <option>Default3</option>
-          <option>Default4</option>
+          {Object.keys(templates).map(t => <option>{t}</option>)}
         </select>
     </div>
   );

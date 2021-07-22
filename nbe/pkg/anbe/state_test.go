@@ -10,12 +10,12 @@ func TestStateCrud(t *testing.T) {
 	var dao = NewDao(":memory:")
 	var state = NewState(dao)
 	assert.Equal(t, 0, len(state.All().Files))
-	f1 := &CreateArgs{Name: "name1", Mime: "mime1"}
+	f1 := &CreateArgs{Name: "name1", Data: "data1"}
 	err := state.Apply(&Mutation{Name: "create", Args: f1})
 	panicIfError(err)
 	assert.Less(t, uint(0), f1.Id)
 	assert.Equal(t, 1, len(state.All().Files))
-	f2 := &CreateArgs{Name: "name2", Mime: "mime2"}
+	f2 := &CreateArgs{Name: "name2", Data: "data2"}
 	err = state.Apply(&Mutation{Name: "create", Args: f2})
 	panicIfError(err)
 	assert.Less(t, uint(0), f2.Id)

@@ -42,7 +42,7 @@ function FileRows(props) {
       onClick={() => handleSelect(file)} 
       className={`FileRow ${selectedClass(file)} ${enabledClass(file)}`}>
       <td>
-        <div className="FileName">{file.name} ({file.mime})</div>
+        <div className="FileName">{file.name}</div>
         <div className="FileActions">
         <button onClick={() => handleEdit(file)}>Edit</button>
           <button onClick={() => handleDelete(file)}>Delete</button>

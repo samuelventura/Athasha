@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import Editor from './Editor';
 import env from "./environ"
 import reportWebVitals from './reportWebVitals';
 import {
@@ -12,20 +10,25 @@ import {
   useParams
 } from "react-router-dom";
 
+const App = lazy(() => import('./App'));
+const Editor = lazy(() => import('./Editor'));
+
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <Switch>
-        <Route exact={true} path="/">
-          <App />
-        </Route>
-        <Route path="/edit/:id">
-          <Edit />
-        </Route>
-        <Route path="*">
-          <NotFound />
-        </Route>
-      </Switch>      
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route exact={true} path="/">
+            <App />
+          </Route>
+          <Route path="/edit/:id">
+            <Edit />
+          </Route>
+          <Route path="*">
+            <NotFound />
+          </Route>
+        </Switch> 
+      </Suspense>     
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

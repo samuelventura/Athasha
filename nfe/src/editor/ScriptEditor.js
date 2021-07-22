@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react';
 
 import CodeEditor from './CodeEditor';
-//after code editor to override styles
-import "./ScriptEditor.css";
 
 import keyboardJS from "keyboardjs"
 import env from "../environ"
 
 //[ ] On save ES6 linter
-//[ ] Diff confirm out of sync save https://diff2html.xyz
+//[ ] Diff confirm out-of-sync save https://diff2html.xyz
 //[ ] Single mime with multiple templates
 //[x] Save/run/enable/disable keyboard shortcuts
+//[x] Preserve out-of-sync state across reconnections
 function ScriptEditor(props) {
   
   const [id, setId] = useState(0);
   const [data, setData] = useState("");
+  const [initial, setInitial] = useState("");
 
   useEffect(()=>{
+    //first connection detection
     if (id === 0 && props.state.id > 0) {
       setId(props.state.id);
       setData(props.state.data);
+      setInitial(props.state.data);
+    }
+    //self save detection
+    const one = props.state.session.one;
+    const update = props.state.session.update;
+    if (one === update) {
+      setInitial(props.state.data);
     }
   }, [props, id])
 
@@ -73,14 +81,12 @@ function ScriptEditor(props) {
   }
 
   function inSync() {
-    const one = props.state.session.one;
-    const update = props.state.session.update;
-    return one === update;
+    const current = props.state.data;
+    return current === initial;
   }
 
   function isDirty() {
-    const last = props.state.data;
-    return last !== data;
+    return data !== initial;
   }
 
   return (

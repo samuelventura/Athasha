@@ -27,7 +27,6 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 			carg := &OneArgs{}
 			carg.Id = parseUint(fm["id"])
 			carg.Name = fm["name"].(string)
-			carg.Mime = fm["mime"].(string)
 			carg.Enabled = fm["enabled"].(bool)
 			args.Files = append(args.Files, carg)
 		}
@@ -37,7 +36,6 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		args := &OneArgs{}
 		args.Id = parseUint(argm["id"])
 		args.Name = argm["name"].(string)
-		args.Mime = argm["mime"].(string)
 		args.Data = argm["data"].(string)
 		args.Enabled = argm["enabled"].(bool)
 		mut.Args = args
@@ -46,7 +44,7 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		args := &CreateArgs{}
 		args.Id = maybeUint(argm["id"])
 		args.Name = argm["name"].(string)
-		args.Mime = argm["mime"].(string)
+		args.Data = argm["data"].(string)
 		mut.Args = args
 	case "delete":
 		argm := mm["args"].(map[string]interface{})
@@ -125,7 +123,6 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 			fm := make(map[string]interface{})
 			fm["id"] = file.Id
 			fm["name"] = file.Name
-			fm["mime"] = file.Mime
 			fm["enabled"] = file.Enabled
 			files = append(files, fm)
 		}
@@ -135,7 +132,6 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm = make(map[string]interface{})
 		argm["id"] = args.Id
 		argm["name"] = args.Name
-		argm["mime"] = args.Mime
 		argm["data"] = args.Data
 		argm["enabled"] = args.Enabled
 	case "create":
@@ -143,7 +139,7 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm = make(map[string]interface{})
 		argm["id"] = args.Id
 		argm["name"] = args.Name
-		argm["mime"] = args.Mime
+		argm["data"] = args.Data
 	case "delete":
 		args := argi.(*DeleteArgs)
 		argm = make(map[string]interface{})

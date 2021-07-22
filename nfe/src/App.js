@@ -1,8 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 
-import "./App.css";
-
 import FileBrowser from "./app/FileBrowser";
+import "./App.css";
 
 import socket from "./socket"
 import env from "./environ"

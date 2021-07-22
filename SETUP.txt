@@ -49,5 +49,6 @@ MOD="github.com/samuelventura/athasha/nbe"
 - Default editor shown while disconnected (better default)
 - Throttle code mirror changes (timed buffer)
 - Prompts can be blocked by FF, use modals
+- Css split to ensure separated body styling for index and editor
 
 

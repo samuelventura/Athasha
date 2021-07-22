@@ -9,7 +9,7 @@ type Dao interface {
 	Close()
 	All() []FileDro
 	Delete(id uint)
-	Create(name string, mime string) *FileDro
+	Create(name string, data string) *FileDro
 	Rename(id uint, name string) *FileDro
 	Update(id uint, data string) *FileDro
 	Enable(id uint, enabled bool) *FileDro
@@ -18,7 +18,6 @@ type Dao interface {
 type FileDro struct {
 	gorm.Model
 	Name    string
-	Mime    string
 	Data    string
 	Enabled bool
 }
@@ -49,8 +48,8 @@ func (dao *daoDso) All() (files []FileDro) {
 	return
 }
 
-func (dao *daoDso) Create(name string, mime string) *FileDro {
-	row := &FileDro{Name: name, Mime: mime}
+func (dao *daoDso) Create(name string, data string) *FileDro {
+	row := &FileDro{Name: name, Data: data}
 	result := dao.db.Create(row)
 	panicIfError(result.Error)
 	return row
