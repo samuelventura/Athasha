@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Default(props) {
+function DefaultEditor(props) {
   
   //useState called only once and not on avery prop change
   const [name, setName] = useState("");
@@ -24,7 +24,7 @@ function Default(props) {
   }, [props])
 
   return (
-    <div className="Default">
+    <div className="DefaultEditor">
       <h1>ID: {props.state.id}</h1>
       <h3>Enabled: {props.state.enabled ? "true" : "false"}</h3>
       <h3>Mime: {props.state.mime}</h3>
@@ -41,4 +41,4 @@ function Default(props) {
   );
 }
 
-export default Default;
+export default DefaultEditor;

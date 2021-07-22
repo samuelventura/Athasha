@@ -85,8 +85,7 @@ function App() {
       case "delete":
       case "rename":
       case "enable":
-        env.log("ws.send", {name, args});
-        state.send(JSON.stringify({name, args}));
+        state.send({name, args});
         break;
       default:
         env.log("Unknown mutation", name, args)

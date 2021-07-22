@@ -70,7 +70,6 @@ func (state *stateDso) One(id uint) *OneArgs {
 		mut.Name = file.Name
 		mut.Mime = file.Mime
 		mut.Data = file.Data
-		mut.Version = file.Version
 		mut.Enabled = file.Enabled
 	}
 	return mut
@@ -111,17 +110,11 @@ func (state *stateDso) applyRename(args *RenameArgs) error {
 }
 
 func (state *stateDso) applyUpdate(args *UpdateArgs) error {
-	file, ok := state.files[args.Id]
-	if !ok {
+	if _, ok := state.files[args.Id]; !ok {
 		return fmt.Errorf("unknown file %v", args.Id)
 	}
-	if file.Version != args.Version {
-		return fmt.Errorf("file %v version mismatch c:%v n:%v",
-			args.Id, file.Version, args.Version)
-	}
-	file = state.dao.Update(args.Id, args.Data)
+	file := state.dao.Update(args.Id, args.Data)
 	state.files[file.ID] = file
-	args.Version++
 	return nil
 }
 

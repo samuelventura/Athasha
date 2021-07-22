@@ -5,15 +5,15 @@ import "./Editor.css";
 import socket from "./socket"
 import env from "./environ";
 
-import Default from "./editor/Default";
-import Script from "./editor/Script";
+import DefaultEditor from "./editor/DefaultEditor";
+import ScriptEditor from "./editor/ScriptEditor";
 
 function Editor(props) {
   
   function reducer(state, {session, name, args}) {
-    // called twice on purpose by reactjs 
-    // to detect side effects on strict mode
-    // reducer must be pure
+    //called twice on purpose by reactjs 
+    //to detect side effects on strict mode
+    //reducer must be pure
     switch(name){
       case "one": {
         const next = Object.assign({}, state);
@@ -24,7 +24,6 @@ function Editor(props) {
         next.name = args.name;
         next.mime = args.mime;
         next.data = args.data;
-        next.version = args.version;
         next.enabled = args.enabled;
         next.connected = true;
         return next;
@@ -37,7 +36,6 @@ function Editor(props) {
       case "update": {
         const next = Object.assign({}, state);
         next.data = args.data;
-        next.version = args.version;
         next.session.update = session;
         return next;
       }
@@ -55,6 +53,7 @@ function Editor(props) {
         const next = Object.assign({}, state);
         //keep state to avoid default editor showing
         next.connected = false;
+        next.send = socket.send;
         return next;
       }
       default:
@@ -69,7 +68,6 @@ function Editor(props) {
     name: "", 
     mime: "", 
     data: "",
-    version: 0,
     enabled: false,
     session: {},
     connected: false,
@@ -82,8 +80,7 @@ function Editor(props) {
       case "enable":
       case "update":
       case "rename":
-        env.log("ws.send", {name, args});
-        state.send(JSON.stringify({name, args}));
+        state.send({name, args});
         break;
       default:
         env.log("Unknown mutation", name, args)
@@ -97,9 +94,9 @@ function Editor(props) {
   function router() {
     switch(state.mime) {
       case "Script":
-        return <Script id={props.id} state={state} dispatch={handleDispatch}/>
+        return <ScriptEditor id={props.id} state={state} dispatch={handleDispatch}/>
       default:
-        return <Default id={props.id} state={state} dispatch={handleDispatch}/>
+        return <DefaultEditor id={props.id} state={state} dispatch={handleDispatch}/>
     }
   }
 

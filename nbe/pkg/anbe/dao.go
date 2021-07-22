@@ -20,7 +20,6 @@ type FileDro struct {
 	Name    string
 	Mime    string
 	Data    string
-	Version uint
 	Enabled bool
 }
 
@@ -77,7 +76,6 @@ func (dao *daoDso) Update(id uint, data string) *FileDro {
 	result := dao.db.First(row, id)
 	panicIfError(result.Error)
 	row.Data = data
-	row.Version++
 	result = dao.db.Save(row)
 	panicIfError(result.Error)
 	return row

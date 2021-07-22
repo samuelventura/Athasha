@@ -39,7 +39,6 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		args.Name = argm["name"].(string)
 		args.Mime = argm["mime"].(string)
 		args.Data = argm["data"].(string)
-		args.Version = parseUint(argm["version"])
 		args.Enabled = argm["enabled"].(bool)
 		mut.Args = args
 	case "create":
@@ -67,7 +66,6 @@ func decodeMutation(bytes []byte) (mut *Mutation, err error) {
 		args := &UpdateArgs{}
 		args.Id = parseUint(argm["id"])
 		args.Data = argm["data"].(string)
-		args.Version = parseUint(argm["version"])
 		mut.Args = args
 		mut.Fid = args.Id
 	case "enable":
@@ -139,7 +137,6 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm["name"] = args.Name
 		argm["mime"] = args.Mime
 		argm["data"] = args.Data
-		argm["version"] = args.Version
 		argm["enabled"] = args.Enabled
 	case "create":
 		args := argi.(*CreateArgs)
@@ -161,7 +158,6 @@ func encodeArgs(name string, argi interface{}) (argm map[string]interface{}, err
 		argm = make(map[string]interface{})
 		argm["id"] = args.Id
 		argm["data"] = args.Data
-		argm["version"] = args.Version
 	case "enable":
 		args := argi.(*EnableArgs)
 		argm = make(map[string]interface{})

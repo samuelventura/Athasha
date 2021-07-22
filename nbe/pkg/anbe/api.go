@@ -19,7 +19,6 @@ type OneArgs struct {
 	Name    string
 	Mime    string
 	Data    string
-	Version uint
 	Enabled bool
 }
 
@@ -39,9 +38,8 @@ type RenameArgs struct {
 }
 
 type UpdateArgs struct {
-	Id      uint
-	Data    string
-	Version uint
+	Id   uint
+	Data string
 }
 
 type EnableArgs struct {

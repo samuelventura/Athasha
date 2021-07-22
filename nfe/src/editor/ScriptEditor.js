@@ -1,19 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {Controlled as CodeMirror} from 'react-codemirror2-react-17';
+import React, { useState, useEffect } from 'react';
 
-import "./Script.css";
+import "./ScriptEditor.css";
 
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/javascript/javascript';
+import CodeEditor from './CodeEditor';
 
 import env from "../environ"
 
-function Script(props) {
+//FIXME On save ES6 linter
+//FIXME On save callback
+function ScriptEditor(props) {
   
-  //useState called only once and not on avery prop change
   const [id, setId] = useState(0);
   const [data, setData] = useState("");
-  const editor = useRef(null);
 
   useEffect(()=>{
     if (id === 0 && props.state.id > 0) {
@@ -21,14 +19,6 @@ function Script(props) {
       setData(props.state.data);
     }
   }, [props, id])
-
-  useEffect(()=>{
-    //env.log("useEffect", editor.current, editor.current.editor.on);
-    // const cm = editor.current.editor;
-    // cm.on("save", () => {
-    //   env.log("on.save");
-    // });
-  }, []) 
 
   function handleRename() {
     const file = props.state;
@@ -45,10 +35,9 @@ function Script(props) {
   function handleSave() {
     env.log("handleSave")
     const id = props.id;
-    const version = props.state.version;
-    props.dispatch({name: "update", args: {id, data, version}})
+    props.dispatch({name: "update", args: {id, data}})
   }
-
+ 
   function handleRun() {
     env.log("handleRun")
   }
@@ -73,15 +62,8 @@ function Script(props) {
     return last !== data;
   }
 
-  //FIXME rename on name click
-  //FIXME ES6 linter
-  //FIXME run button
-  //FIXME save button and key shortcut
-  //FIXME local storage until save confirmed
-  //FIXME disabled style or chip
-  //CodeMittor doc.markClean, save(Cmd+S)
   return (
-    <div className="Default">
+    <div className="ScriptEditor">
       <div className="FileName">
         <span>
           <h3 onClick={handleRename} 
@@ -98,29 +80,13 @@ function Script(props) {
           <button onClick={() => handleEnable(false)}>Disable</button>
         </span>
       </div>
-      <CodeMirror
-        ref={editor}
+      <CodeEditor 
+        mode="javascript"
         value={data}
-        options={{
-          //explicit mode needed when multiple 
-          //mode.js files are loaded
-          mode: "javascript",
-          lineNumbers: true,
-        }}
-        //author says onChange used only in uncontrolled
-        onBeforeChange={(_editor, _data, value) => {
-          //throttle?
-          env.log("onBeforeChange", value);
-          handleChange(value);
-          // setData(value);
-          // const id = props.state.id;
-          // const data = value;
-          // props.dispatch({name: "update", args: {id, data, version}})
-          // setVersion(version + 1);
-        }}
+        onChange={handleChange}
       />
     </div>
   );
 }
 
-export default Script;
+export default ScriptEditor;
