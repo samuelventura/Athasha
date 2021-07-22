@@ -1,15 +1,15 @@
 function FileHeader(props) {
   
   function handleAscClick() {
-    props.onSortChange("asc");
+    props.onSortChange("asc")
   }
   
   function handleDescClick() {
-    props.onSortChange("desc");
+    props.onSortChange("desc")
   }
 
-  const ascSelected = props.sort === "asc" ? "*" : "";
-  const descSelected = props.sort === "desc" ? "*" : "";
+  const ascSelected = props.sort === "asc" ? "*" : ""
+  const descSelected = props.sort === "desc" ? "*" : ""
 
   return (
     <thead className="FileHeader">
@@ -23,7 +23,7 @@ function FileHeader(props) {
         </th>
       </tr>
     </thead>
-  );
+  )
 }
 
-export default FileHeader;
+export default FileHeader

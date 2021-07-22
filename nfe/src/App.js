@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react'
 
-import FileBrowser from "./app/FileBrowser";
-import "./App.css";
+import FileBrowser from "./app/FileBrowser"
+import "./App.css"
 
 import socket from "./socket"
 import env from "./environ"
@@ -14,56 +14,56 @@ function App() {
     // reducer must be pure
     switch(name){
       case "all": {
-        const next = Object.assign({}, state);
-        next.session = session;
-        next.files = {};
-        args.files.forEach(f => next.files[f.id] = f);
-        return next;
+        const next = Object.assign({}, state)
+        next.session = session
+        next.files = {}
+        args.files.forEach(f => next.files[f.id] = f)
+        return next
       }
       case "create": {
-        const next = Object.assign({}, state);
-        next.files[args.id] = args;
+        const next = Object.assign({}, state)
+        next.files[args.id] = args
         if (next.session === session) {
-          next.selected = args;
+          next.selected = args
         }
-        return next;
+        return next
       }
       case "delete": {
-        const next = Object.assign({}, state);
+        const next = Object.assign({}, state)
         delete next.files[args.id]
-        return next;
+        return next
       }
       case "rename": {
-        const next = Object.assign({}, state);
-        next.files[args.id].name = args.name;
-        return next;
+        const next = Object.assign({}, state)
+        next.files[args.id].name = args.name
+        return next
       }
       case "enable": {
-        const next = Object.assign({}, state);
-        next.files[args.id].enabled = args.enabled;
-        return next;
+        const next = Object.assign({}, state)
+        next.files[args.id].enabled = args.enabled
+        return next
       }
       case "select": {
-        const next = Object.assign({}, state);
-        next.selected = args;
-        return next;
+        const next = Object.assign({}, state)
+        next.selected = args
+        return next
       }
       case "close": {
         //flickers on navigating back (reconnect)
-        const next = Object.assign({}, state);
-        next.files = {};
-        next.selected = {};
-        next.session = null;
-        return next;
+        const next = Object.assign({}, state)
+        next.files = {}
+        next.selected = {}
+        next.session = null
+        return next
       }
       case "send": {
-        const next = Object.assign({}, state);
-        next.send = args;
-        return next;
+        const next = Object.assign({}, state)
+        next.send = args
+        return next
       }
       default:
         env.log("Unknown mutation", name, args, session)
-        return state;
+        return state
     }
   }
 
@@ -72,28 +72,28 @@ function App() {
     selected: {}, 
     session: null,
     send: socket.send
-  };
-  const [state, dispatch] = useReducer(reducer, initial);
+  }
+  const [state, dispatch] = useReducer(reducer, initial)
 
   function handleDispatch({name, args}) {
     switch(name) {
       case "select":
-        dispatch({name, args});
-        break;
+        dispatch({name, args})
+        break
       case "create":
       case "delete":
       case "rename":
       case "enable":
-        state.send({name, args});
-        break;
+        state.send({name, args})
+        break
       default:
         env.log("Unknown mutation", name, args)
     }
   }
 
   useEffect(() => {
-    return socket.create(dispatch, "/index");
-  }, []);
+    return socket.create(dispatch, "/index")
+  }, [])
 
   return (
     <div className="App">
@@ -101,7 +101,7 @@ function App() {
         state={state} 
         dispatch={handleDispatch} />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

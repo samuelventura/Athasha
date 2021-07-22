@@ -39,7 +39,7 @@ MOD="github.com/samuelventura/athasha/nbe"
 - Edit action button
 - File selection on click
 - File auto selection on create
-- File auto edit on create
+- File auto edit on create (or scroll into view)
 - Show file actions only for selected file
 - File editor auto launch on create
 - File rename action with modal

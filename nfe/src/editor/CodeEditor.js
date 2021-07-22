@@ -30,7 +30,7 @@ function CodeEditor(props) {
   }, [mode])
 
   useEffect(() => {
-    if (cm == null) return;
+    if (cm == null) return
     function handleChange() {
       const value = cm.getValue()
       if (onChange) {
@@ -42,9 +42,10 @@ function CodeEditor(props) {
   }, [cm, onChange])
   
   useEffect(() => {
-    if (cm == null) return;
+    if (cm == null) return
     if (value !== cm.getValue()) {
       cm.setValue(value)
+      cm.setCursor(cm.lineCount(), 0)
     }
   }, [cm, value])
 

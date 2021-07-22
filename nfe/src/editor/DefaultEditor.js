@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 function DefaultEditor(props) {
   
   //useState called only once and not on avery prop change
-  const [name, setName] = useState("");
-  const [data, setData] = useState("");
+  const [name, setName] = useState("")
+  const [data, setData] = useState("")
 
   function handleUpdate() {
     props.dispatch({name: "update", args: {id: props.state.id, data}})
@@ -37,7 +37,7 @@ function DefaultEditor(props) {
       <textarea value={data} onChange={e => setData(e.target.value)}/>
       <br/><button onClick={handleUpdate}>Update</button>
     </div>
-  );
+  )
 }
 
-export default DefaultEditor;
+export default DefaultEditor

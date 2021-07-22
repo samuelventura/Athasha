@@ -20,7 +20,7 @@ function create(dispatch, path) {
   }
 
   function send(msg) {
-    env.log("ws.send", disposed, closed, msg);
+    env.log("ws.send", disposed, closed, msg)
     if (disposed) return
     if (closed) return
     safe(() => ws.send(JSON.stringify(msg)) )

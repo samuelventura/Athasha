@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 function FileSearch(props) {
 
   //useState called only once and not on avery prop change
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("")
   
   function handleChange(e) {
-    setFilter(e.target.value);
+    setFilter(e.target.value)
   }
 
   function handleClick() {
-    props.onFilterChange(filter);
+    props.onFilterChange(filter)
   }
 
   //esc exits full screen on macos 
   //use X icon to reset filter instead
   function handleKeyPress(e) {
     if(e.key === 'Enter') {
-      props.onFilterChange(filter);
+      props.onFilterChange(filter)
     }
   }
 
@@ -40,7 +40,7 @@ function FileSearch(props) {
           onClick={handleClick}
           >Search</button>
     </div>
-  );
+  )
 }
 
-export default FileSearch;
+export default FileSearch
