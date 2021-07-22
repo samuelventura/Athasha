@@ -12,17 +12,13 @@ function FileHeader(props) {
   const descSelected = props.sort === "desc" ? "*" : ""
 
   return (
-    <thead className="FileHeader">
-      <tr>
-        <th>
-          <span className="FileName">Name</span> 
-          <span className="FileSort">
-            <button onClick={handleAscClick}>Asc{ascSelected}</button> 
-            <button onClick={handleDescClick}>Desc{descSelected}</button>
-          </span>
-        </th>
-      </tr>
-    </thead>
+    <div className="FileHeader">
+      <span className="FileName">Name</span> 
+      <span className="FileSort">
+        <button onClick={handleAscClick}>Asc{ascSelected}</button> 
+        <button onClick={handleDescClick}>Desc{descSelected}</button>
+      </span>
+    </div>
   )
 }
 

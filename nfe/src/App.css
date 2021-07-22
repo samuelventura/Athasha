@@ -23,7 +23,7 @@ table, th, td {
   display: block;
 }
 
-.FileHeader th {
+.FileHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,5 +31,12 @@ table, th, td {
 }
 
 .FileTable { margin: 0 auto; }
+
+.FileTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 320px;
+}
 
 body { text-align: center; }
