@@ -31,7 +31,13 @@ go test github.com/samuelventura/athasha/nbe/pkg/anbe -v
 
 [SCRIPT]
 MOD="github.com/samuelventura/athasha/nbe"
+(cd nbe; go test $MOD/pkg/anrt)
+(cd nbe; go test $MOD/pkg/anrt -v)
+
+MOD="github.com/samuelventura/athasha/nbe"
 (cd nbe; go test $MOD/pkg/anbe)
+(cd nbe; go test $MOD/pkg/anbe -v)
+
 (cd nbe; go install $MOD/cmd/anbe && anbe)
 (cd nfe; npm start)
 
@@ -50,5 +56,7 @@ MOD="github.com/samuelventura/athasha/nbe"
 - Throttle code mirror changes (timed buffer)
 - Prompts can be blocked by FF, use modals
 - Css split to ensure separated body styling for index and editor
+- Graceful handling of delete while editing
+- Template catalog accesible while editing
 
 
