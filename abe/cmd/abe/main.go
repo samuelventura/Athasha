@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/samuelventura/athasha/nbe/pkg/anbe"
+	"github.com/samuelventura/athasha/abe/pkg/abe"
 )
 
 func main() {
@@ -14,12 +14,12 @@ func main() {
 	signal.Notify(ctrlc, os.Interrupt)
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 	var db = relative("db3")
-	var dao = anbe.NewDao(db)
-	var state = anbe.NewState(dao)
-	var hub = anbe.NewHub(state)
-	var core = anbe.NewCore(hub)
+	var dao = abe.NewDao(db)
+	var state = abe.NewState(dao)
+	var hub = abe.NewHub(state)
+	var core = abe.NewCore(hub)
 	defer core.Close()
-	var entry = anbe.NewEntry(core, 5001)
+	var entry = abe.NewEntry(core, 5001)
 	defer entry.Close()
 	log.Println("Port", entry.Port())
 	log.Println("Pid", os.Getpid())

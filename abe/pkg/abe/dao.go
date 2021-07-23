@@ -1,4 +1,4 @@
-package anbe
+package abe
 
 import (
 	"gorm.io/driver/sqlite"

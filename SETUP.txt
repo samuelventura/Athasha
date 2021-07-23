@@ -17,29 +17,30 @@ https://testing-library.com
 https://keycode.info
 
 add ~/go/bin to PATH
-mkdir nbe
-cd nbe
-go mod init github.com/samuelventura/athasha/nbe
+mkdir abe
+cd abe
+go mod init github.com/samuelventura/athasha/abe
 go get -u all
 go mod tidy
-go install github.com/samuelventura/athasha/nbe/cmd/anbe
-anbe
-go install github.com/samuelventura/athasha/nbe/cmd/anbe && anbe
+go install github.com/samuelventura/athasha/abe/cmd/aabe
+aabe
+go install github.com/samuelventura/athasha/abe/cmd/aabe && aabe
 
 go clean -testcache
-go test github.com/samuelventura/athasha/nbe/pkg/anbe -v
+go test github.com/samuelventura/athasha/abe/pkg/aabe -v
 
 [SCRIPT]
-MOD="github.com/samuelventura/athasha/nbe"
-(cd nbe; go test $MOD/pkg/anrt)
-(cd nbe; go test $MOD/pkg/anrt -v)
+MOD="github.com/samuelventura/athasha/abe"
+(cd abe; go test $MOD/pkg/art)
+(cd abe; go test $MOD/pkg/art -v)
+abe/pkg/art/babel.sh
 
-MOD="github.com/samuelventura/athasha/nbe"
-(cd nbe; go test $MOD/pkg/anbe)
-(cd nbe; go test $MOD/pkg/anbe -v)
+MOD="github.com/samuelventura/athasha/abe"
+(cd abe; go test $MOD/pkg/abe)
+(cd abe; go test $MOD/pkg/abe -v)
 
-(cd nbe; go install $MOD/cmd/anbe && anbe)
-(cd nfe; npm start)
+(cd abe; go install $MOD/cmd/abe && abe)
+(cd afe; npm start)
 
 [TODO]
 - Edit action button
@@ -58,5 +59,7 @@ MOD="github.com/samuelventura/athasha/nbe"
 - Css split to ensure separated body styling for index and editor
 - Graceful handling of delete while editing
 - Template catalog accesible while editing
+- Source map debugging
+- Similar concept https://k6.io
 
 

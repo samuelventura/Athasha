@@ -1,35 +1,34 @@
-package anrt
+package art
 
 import (
-	"io/ioutil"
 	"log"
 	"math"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/dop251/goja"
-	babel "github.com/jvatic/goja-babel"
 	"github.com/stretchr/testify/assert"
 )
 
 //https://babeljs.io
 //https://github.com/jvatic/goja-babel
 func TestGojaBabel(t *testing.T) {
-	plugins := map[string]interface{}{
-		"plugins": []string{
-			"transform-react-jsx",
-			"transform-block-scoping",
+	babel := NewBabel()
+	opts := map[string]interface{}{
+		"presets": []string{
+			"env",
 		},
 	}
-	res, err := babel.Transform(strings.NewReader(`
+	src := `
 	let a = 0
-	`), plugins)
+	let b = () => {}
+	`
+	code1, err := babel.Transform(src, opts)
 	panicIfError(err)
-	log.Println(res, reflect.TypeOf(res))
-	bytes, err := ioutil.ReadAll(res)
+	log.Println(code1)
+	code2, err := babel.Clone().Transform(src, opts)
 	panicIfError(err)
-	log.Println(string(bytes))
+	log.Println(code2)
 }
 
 //https://pkg.go.dev/github.com/dop251/goja
@@ -48,6 +47,7 @@ func TestGojaDataTypes(t *testing.T) {
 		inf_n: -Infinity,
 		array: [0],
 		fn: function() {},
+		fnc: new function() {},
 	}`)
 	panicIfError(err)
 	e := v.Export()
@@ -68,6 +68,8 @@ func TestGojaDataTypes(t *testing.T) {
 	assert.Equal(t, []interface{}{int64(0)}, m["array"])
 	fn := func(goja.FunctionCall) goja.Value { return vm.ToValue(0) }
 	assert.Equal(t, reflect.TypeOf(fn), reflect.TypeOf(m["fn"]))
+	fnc := make(map[string]interface{})
+	assert.Equal(t, reflect.TypeOf(fnc), reflect.TypeOf(m["fnc"]))
 	assert.Equal(t, math.Inf(1), math.Inf(1))
 	assert.Equal(t, math.Inf(-1), math.Inf(-1))
 	//always different
