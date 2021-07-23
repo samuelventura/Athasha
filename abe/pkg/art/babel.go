@@ -12,12 +12,20 @@ var babeljs string
 type babelDso struct {
 	prog      *goja.Program
 	vm        *goja.Runtime
+	opts      map[string]interface{}
 	transform func(src string, opts map[string]interface{}) (goja.Value, error)
+}
+
+type BabelResult struct {
+	Code string
+	Smap map[string]interface{}
 }
 
 type Babel interface {
 	Clone() Babel
-	Transform(src string, opts map[string]interface{}) (string, error)
+	Transform(file string, src string) (BabelResult, error)
+	GetOptions() map[string]interface{}
+	SetOptions(map[string]interface{})
 }
 
 func NewBabel() Babel {
@@ -25,7 +33,21 @@ func NewBabel() Babel {
 	babel.prog = CompileBabel()
 	babel.vm = goja.New()
 	babel.transform = LoadBabel(babel.vm, babel.prog)
+	babel.opts = map[string]interface{}{
+		"presets": []string{
+			"env",
+		},
+		"sourceMaps": "both",
+	}
 	return babel
+}
+
+func (babel *babelDso) GetOptions() map[string]interface{} {
+	return babel.opts
+}
+
+func (babel *babelDso) SetOptions(opts map[string]interface{}) {
+	babel.opts = opts
 }
 
 func (babel *babelDso) Clone() Babel {
@@ -33,10 +55,13 @@ func (babel *babelDso) Clone() Babel {
 	clone.prog = babel.prog
 	clone.vm = goja.New()
 	clone.transform = LoadBabel(clone.vm, clone.prog)
+	clone.opts = babel.opts
 	return clone
 }
 
-func (babel *babelDso) Transform(src string, opts map[string]interface{}) (code string, err error) {
+func (babel *babelDso) Transform(file string, src string) (res BabelResult, err error) {
+	opts := babel.opts
+	opts["sourceFileName"] = file
 	value, err := babel.transform(src, opts)
 	if err != nil {
 		return
@@ -46,7 +71,10 @@ func (babel *babelDso) Transform(src string, opts map[string]interface{}) (code 
 	// 	result.map;
 	// 	result.ast;
 	// });
-	code = value.ToObject(babel.vm).Get("code").String()
+	vo := value.ToObject(babel.vm)
+	res = BabelResult{}
+	res.Code = vo.Get("code").String()
+	res.Smap = vo.Get("map").Export().(map[string]interface{})
 	return
 }
 

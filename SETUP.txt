@@ -30,17 +30,24 @@ go clean -testcache
 go test github.com/samuelventura/athasha/abe/pkg/aabe -v
 
 [SCRIPT]
-MOD="github.com/samuelventura/athasha/abe"
-(cd abe; go test $MOD/pkg/art)
-(cd abe; go test $MOD/pkg/art -v)
+
+(cd abe; go mod tidy)
+
 abe/pkg/art/babel.sh
 
 MOD="github.com/samuelventura/athasha/abe"
+
+(cd abe; go test $MOD/pkg/art)
+(cd abe; go test $MOD/pkg/art -v)
+
 (cd abe; go test $MOD/pkg/abe)
 (cd abe; go test $MOD/pkg/abe -v)
 
 (cd abe; go install $MOD/cmd/abe && abe)
 (cd afe; npm start)
+
+(cd abe; go install $MOD/cmd/ash && ash ajs/hello.js)
+./ajs.sh hello.js
 
 [TODO]
 - Edit action button

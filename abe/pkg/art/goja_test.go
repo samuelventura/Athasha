@@ -14,21 +14,16 @@ import (
 //https://github.com/jvatic/goja-babel
 func TestGojaBabel(t *testing.T) {
 	babel := NewBabel()
-	opts := map[string]interface{}{
-		"presets": []string{
-			"env",
-		},
-	}
 	src := `
 	let a = 0
 	let b = () => {}
 	`
-	code1, err := babel.Transform(src, opts)
+	res1, err := babel.Transform("inline.js", src)
 	panicIfError(err)
-	log.Println(code1)
-	code2, err := babel.Clone().Transform(src, opts)
+	log.Println(res1.Code, res1.Smap)
+	res2, err := babel.Clone().Transform("inline.js", src)
 	panicIfError(err)
-	log.Println(code2)
+	log.Println(res2.Code, res2.Smap)
 }
 
 //https://pkg.go.dev/github.com/dop251/goja
